@@ -1,8 +1,2 @@
-/*.exe
-/obj/*.o
-/obj/construtivos/*.o
-/obj/definicao_problema/*.o
-/obj/interfaces/*.o
-/obj/meta_heuristicas/*.o
-/obj/refinamento/*.o
-/obj/utilitarios/*.o
+*.exe
+*.o
