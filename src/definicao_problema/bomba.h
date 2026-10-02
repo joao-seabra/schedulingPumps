@@ -4,15 +4,18 @@
 #include <iostream>
 #include <iomanip>
 
+class Reservatorio;
+
 class Bomba{
   private:
     double potencia; //KW
     double fluxo; //Fluxo nominal (m3/h)
     double alturaDeTopo; //Head height (mca)
     double eficiencia;
+    Reservatorio *res;
   public:
-    Bomba(double _potencia, double _fluxo, double _alturaDeTopo, double _eficiencia = 0.75):
-      potencia(_potencia), fluxo(_fluxo), alturaDeTopo(_alturaDeTopo), eficiencia(_eficiencia){}
+    Bomba(double _potencia, double _fluxo, double _alturaDeTopo, double _eficiencia = 0.75, Reservatorio *_res):
+      potencia(_potencia), fluxo(_fluxo), alturaDeTopo(_alturaDeTopo), eficiencia(_eficiencia), res(_res){}
   
     virtual ~Bomba(){}
 

@@ -11,31 +11,52 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
   if(!arquivoTWLS){
     std::cerr << "O arquivo " << nomeArquivoTWLS
                    << " nao pode ser aberto.\n";
-        std::exit(EXIT_FAILURE);
+        std::exit(1);
   }
-
-  int nBombas;
-  double capacidade, volumeInicial, tarifaPico, tarifaNormal;
-
-  arquivoTWLS >> capacidade >> volumeInicial >> nBombas >> tarifaPico >> tarifaNormal;
-
   Instancia result;
-  result.nBombas = nBombas;
-  result.tarifaNormal = tarifaNormal;
-  result.tarifaPico = tarifaPico;
-  result.reservatorio = Reservatorio(capacidade, volumeInicial);
+
+  char tipo;
+  double tarifaPico, tarifaNormal;
+
+  arquivoTWLS >> tarifaPico >> tarifaNormal;
+
+  double capacidade, volumeInicial;
 
   double eficiencia, potencia, fluxo, htopo;
-  for(int i = 0; i < result.nBombas; i++){
-    arquivoTWLS >> eficiencia >> potencia >> fluxo >> htopo;
-    result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia));
+  int refReservatorio;
+
+  result.nReservatorios = 0;
+  result.nBombas = 0;
+  result.tarifaNormal = tarifaNormal;
+  result.tarifaPico = tarifaPico;
+
+  while(arquivoTWLS >> tipo){
+    if(std::tolower(tipo) == 'r'){
+      arquivoTWLS >> capacidade >> volumeInicial;
+      result.reservatorios.push_back(Reservatorio(capacidade, volumeInicial));
+      result.nReservatorios++;
+    }
+    else if(std::tolower(tipo) == 'b'){
+      arquivoTWLS >> eficiencia >> potencia >> fluxo >> htopo >> refReservatorio;
+      if(refReservatorio + 1 > result.nReservatorios){
+        std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
+        exit(1);
+      }
+      result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, &result.reservatorios.at(refReservatorio)));
+      result.nBombas++;
+    }
+    else{
+      std::cerr << "Tipo indefinido no arquivo de INFO" << std::endl;
+      exit(1);
+    }
   }
+
 
   std::ifstream arquivoConsumo(nomeArquivoConsumo);
   if(!arquivoConsumo){
     std::cerr << "O arquivo " << nomeArquivoConsumo
     << " nao pode ser aberto.\n";
-    std::exit(EXIT_FAILURE);
+    std::exit(1);
   }
   
   int nDados;
@@ -51,7 +72,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
   if ((int)result.consumo.size() != 24) {
   std::cerr << "Arquivo de consumo deve conter exatamente 24 valores (lidos: "
             << result.consumo.size() << ")\n";
-  std::exit(EXIT_FAILURE);
+  std::exit(1);
 }
 
   return result;
@@ -60,7 +81,11 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
 
 
 std::ostream& operator<<(std::ostream& os, Instancia &inst){
-  os << "Reservatorio: " << inst.reservatorio << std::endl;
+  os << "Numero de reservatorios: " << inst.nReservatorios << std::endl;
+  os << "Reservatorios:\n";
+  for(Reservatorio r : inst.reservatorios){
+    os << r << std::endl;
+  }
   os << "Numero de bombas: " << inst.nBombas << std::endl;
   os << "Bombas:\n";
   for(Bomba b : inst.bombas){

@@ -8,9 +8,10 @@
 #include "reservatorio.h"
 
 typedef struct Instancia{
-  int nBombas = 0;
-  Reservatorio reservatorio = Reservatorio(0,0);
+  std::vector<Reservatorio> reservatorios;
+  int nReservatorios;
   std::vector<Bomba> bombas;
+  int nBombas = 0;
   std::vector<double> consumo;
 
   double tarifaPico = 0.0;
