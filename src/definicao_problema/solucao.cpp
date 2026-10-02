@@ -216,32 +216,20 @@ bool Solucao::alteraVetorSolucao(std::vector<bool> novaSolucao){
   return true;
 }
 
-void Solucao::copia(const Solucao &s){
-  alteraVetorSolucao(s.vetorSolucao);
-  fAvaliacao = s.fAvaliacao;
-  nInterrupcoes = s.nInterrupcoes;
-  penalidade1 = s.penalidade1;
-  penalidade2 = s.penalidade2;
-  penalidade3 = s.penalidade3;
 
-}
-
-Solucao& Solucao::operator=(const Solucao& outra) {
-    // 1. Proteção contra auto-atribuição (ex: s1 = s1)
-    if (this == &outra) {
+Solucao& Solucao::operator=(const Solucao& s2) {
+    if (this == &s2) {
         return *this;
     }
 
-    // 2. Cópia dos membros de dados
-    this->vetorSolucao = outra.vetorSolucao;
-    this->fAvaliacao = outra.fAvaliacao;
-    this->custoEnergia = outra.custoEnergia;
-    this->nInterrupcoes = outra.nInterrupcoes;
-    this->penalidade1 = outra.penalidade1;
-    this->penalidade2 = outra.penalidade2;
-    this->penalidade3 = outra.penalidade3;
+    this->vetorSolucao = s2.vetorSolucao;
+    this->fAvaliacao = s2.fAvaliacao;
+    this->custoEnergia = s2.custoEnergia;
+    this->nInterrupcoes = s2.nInterrupcoes;
+    this->penalidade1 = s2.penalidade1;
+    this->penalidade2 = s2.penalidade2;
+    this->penalidade3 = s2.penalidade3;
 
-    // 3. Retorna a própria referência para permitir atribuições em cadeia (ex: a = b = c)
     return *this;
 }
 

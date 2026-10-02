@@ -27,14 +27,8 @@ double multistart(Instancia &inst, Solucao &s, int iterMax){
     solucaoAleatoria(inst, sEstrela);
     randomDescent(inst, sEstrela, 100);
 
-    /*
-    if(sEstrela.getFAvaliacao() < s.getFAvaliacao() && validaSolucao(inst, sEstrela)){
-      s.copia(sEstrela); 
-      iter = 0;
-    }
-    */
      if(sEstrela.getFAvaliacao() < s.getFAvaliacao()){
-       s.copia(sEstrela); 
+       s = sEstrela; 
        iter = 0;
      }
 

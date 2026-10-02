@@ -66,10 +66,9 @@ class Solucao{
     void movimentoTroca(int i, int j);
 
     bool alteraVetorSolucao(std::vector<bool> novaSolucao);
-    void copia(const Solucao &s);
 
     friend std::ostream& operator<<(std::ostream& os, const Solucao &s);
-    Solucao& operator=(const Solucao& outra);
+    Solucao& operator=(const Solucao& s2);
 
 };
 

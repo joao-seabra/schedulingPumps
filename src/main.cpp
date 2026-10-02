@@ -16,7 +16,7 @@
 
 #define PENALIDADE1 100
 #define PENALIDADE2 200
-#define PENALIDADE3 1
+#define PENALIDADE3 0.05
 
 void imprimeSolucao(const Instancia &inst, Solucao &s);
 

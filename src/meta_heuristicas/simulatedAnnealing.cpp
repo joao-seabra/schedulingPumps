@@ -88,7 +88,7 @@ double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX,
       if(foVizinho < s.getFAvaliacao()){
         s.movimentoInversao(i);
         if(s.getFAvaliacao() < sEstrela.getFAvaliacao()){
-          sEstrela.copia(s);
+          sEstrela = s;
         }
       }
       else{
@@ -106,7 +106,7 @@ double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX,
     temperatura *= alpha;
   }
                           
-  s.copia(sEstrela);
+  s = sEstrela;
 
   return s.funcaoAvaliacao();
 
