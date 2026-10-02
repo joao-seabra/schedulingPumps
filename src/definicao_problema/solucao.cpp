@@ -80,17 +80,20 @@ double Solucao::calculaLambda(int nInterrupcoes){
 
 double Solucao::funcaoAvaliacao(){
   custoEnergia = calculaEnergia(nInterrupcoes);
-  double excedente, falta;
-  calculaNivel(excedente, falta);
-  fAvaliacao = custoEnergia / calculaLambda(nInterrupcoes) + penalidade1 * excedente + penalidade2 * falta;
+  double excedente, falta, variacaoNivel;
+  calculaNivel(excedente, falta, variacaoNivel);
+
+  fAvaliacao = custoEnergia / calculaLambda(nInterrupcoes) + 
+  penalidade1 * excedente + penalidade2 * falta + penalidade3 * variacaoNivel;
+
   return fAvaliacao;
 }
 
-void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada){
-  calculaNivel(vetorSolucao, excedenteEncontrado, faltaEncontrada);
+void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
+  calculaNivel(vetorSolucao, excedenteEncontrado, faltaEncontrada, variacaoDoNivelEncontrado);
 }
 
-void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada){
+void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
   double nivel = inst.reservatorio.getVolumeInicial();
   double excessoHora, faltaHora;
   double totalExcedente = 0, totalFalta = 0;
@@ -118,6 +121,7 @@ void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado
 
   }
 
+  variacaoDoNivelEncontrado = std::abs(inst.reservatorio.getVolumeInicial() - nivel);
   excedenteEncontrado = totalExcedente;
   faltaEncontrada = totalFalta;
 }
@@ -172,13 +176,13 @@ double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &n
 
 
   //calculo das penalizações
-  double deltaExcedente = 0, deltaFalta = 0;
+  double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
   std::vector<bool> temp = vetorSolucao;
   temp.at(i) = !temp.at(i);
-  calculaNivel(temp, deltaExcedente, deltaFalta);
+  calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
 
   double novaFA = novo_custoEnergia / calculaLambda(novo_numInterrupcoes) 
-                + deltaExcedente * penalidade1 + deltaFalta * penalidade2;
+      + deltaExcedente * penalidade1 + deltaFalta * penalidade2 + deltaNivel * penalidade3;
 
   return novaFA - fAvaliacao;
 }
@@ -218,6 +222,7 @@ void Solucao::copia(const Solucao &s){
   nInterrupcoes = s.nInterrupcoes;
   penalidade1 = s.penalidade1;
   penalidade2 = s.penalidade2;
+  penalidade3 = s.penalidade3;
 
 }
 

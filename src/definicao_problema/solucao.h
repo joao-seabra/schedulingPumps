@@ -17,17 +17,18 @@ class Solucao{
     int nInterrupcoes;
     double penalidade1;
     double penalidade2;
+    double penalidade3;
 
 
     double calculaCusto(int &nInterrupcoes);
 
-    void calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada);
+    void calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
     double calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia);
     double calculaEnergia(int &nInterrupcoes);
     double calculaLambda(int nInterrupcoes);
   public:
-    Solucao(Instancia &_inst, double _penalidade1 = 1000, double _penalidade2 = 1000):
-    inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2){
+    Solucao(Instancia &_inst, double _penalidade1 = 1000, double _penalidade2 = 1000, double _penalidade3 = 1000):
+    inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2), penalidade3(_penalidade3){
       nInterrupcoes = 0;
       vetorSolucao.assign(24 * inst.nBombas, false); //inicializa vetor solução 
       funcaoAvaliacao();
@@ -44,6 +45,7 @@ class Solucao{
     int getNInterrupcoes() const { return nInterrupcoes; }
     double getPenalidade1() const { return penalidade1; }
     double getPenalidade2() const { return penalidade2; }
+    double getPenalidade3() const { return penalidade3; }
 
     /*
     Métodos para calcular custo, capacidade do reservatorio/viabilidade de dada solução, 
@@ -53,7 +55,7 @@ class Solucao{
     double calculaCusto();
     double funcaoAvaliacao();
 
-    void calculaNivel(double &excedenteEncontrado, double &faltaEncontrada);
+    void calculaNivel(double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
     /*Calcula qual foi o excesso e qual foi a falta do 
     reservatorio com aquela solucao hora a hora*/
 
