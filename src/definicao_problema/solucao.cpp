@@ -83,7 +83,7 @@ double Solucao::funcaoAvaliacao(){
   double excedente, falta, variacaoNivel;
   calculaNivel(excedente, falta, variacaoNivel);
 
-  fAvaliacao = custoEnergia / calculaLambda(nInterrupcoes) + 
+  fAvaliacao = (custoEnergia / calculaLambda(nInterrupcoes)) + 
   penalidade1 * excedente + penalidade2 * falta + penalidade3 * variacaoNivel;
 
   return fAvaliacao;

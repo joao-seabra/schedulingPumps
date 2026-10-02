@@ -167,7 +167,7 @@ void imprimeSolucao(const Instancia &inst, Solucao &s){
   std::cout << "\nFalta de s:" << falta << std::endl;
   std::cout << "\nPenalidade por falta de s:" << s.getPenalidade2() << std::endl;
   std::cout << "\nVariacao em relação ao volume inicial:" << variacaoNivel << std::endl;
-  std::cout << "\nPenalidade por falta de s:" << s.getPenalidade3() << std::endl;
+  std::cout << "\nPenalidade por variação de volume:" << s.getPenalidade3() << std::endl;
 
   if (validaSolucao(inst, s)) std::cout << "\nSolução válida\n";
   else std::cout << "\nSoulução Inválida\n";
