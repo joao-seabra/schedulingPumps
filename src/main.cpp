@@ -14,14 +14,15 @@
 #include "meta_heuristicas/multiStart.h"
 #include "meta_heuristicas/simulatedAnnealing.h"
 
-#define PENALIDADE1 100
-#define PENALIDADE2 200
-#define PENALIDADE3 0.05
 
 void imprimeSolucao(const Instancia &inst, Solucao &s);
 
 int main(){
   semente(1000);
+
+  double PENALIDADE1 = 100;
+  double PENALIDADE2 = 200;
+  double PENALIDADE3 = 0.05;
 
   const std::string nomeArquivoTWLS("Instancia/TWLS_INFO.txt");
   const std::string nomeArquivoConsumo("Instancia/INFO_CONSUMO.txt");
