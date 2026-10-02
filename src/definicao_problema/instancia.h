@@ -19,13 +19,16 @@ typedef struct Instancia{
 } Instancia;
 
 /*Lê um arquivo txt com as informações do twls no formato:
-  CAPACIDADE_RESERVATORIO VOLUME_INICIAL N_BOMBAS TARIFA_PICO TARIFA_FORA_PICO
+  TARIFA_PICO TARIFA_FORA_PICO
+  TIPO CAPACIDADE_RESERVATORIO VOLUME_INICIAL
 
-  EFICIENCIA POTENCIA FLUXO H_TOPO
+  TIPO EFICIENCIA POTENCIA FLUXO H_TOPO REFERENCIA_AO_RESERVATORIO
 
   Lê um arquivo txt com as informações do consumo no formato:
   N
-  DADOS
+  DADO1
+  DADO2
+  DADON
 */
 Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nomeArquivoConsumo);
 

@@ -14,7 +14,7 @@ class Bomba{
     double eficiencia;
     Reservatorio *res;
   public:
-    Bomba(double _potencia, double _fluxo, double _alturaDeTopo, double _eficiencia = 0.75, Reservatorio *_res):
+    Bomba(double _potencia, double _fluxo, double _alturaDeTopo, double _eficiencia, Reservatorio *_res):
       potencia(_potencia), fluxo(_fluxo), alturaDeTopo(_alturaDeTopo), eficiencia(_eficiencia), res(_res){}
   
     virtual ~Bomba(){}
