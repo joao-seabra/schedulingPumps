@@ -69,6 +69,7 @@ class Solucao{
     void copia(const Solucao &s);
 
     friend std::ostream& operator<<(std::ostream& os, const Solucao &s);
+    Solucao& operator=(const Solucao& outra);
 
 };
 

@@ -226,6 +226,25 @@ void Solucao::copia(const Solucao &s){
 
 }
 
+Solucao& Solucao::operator=(const Solucao& outra) {
+    // 1. Proteção contra auto-atribuição (ex: s1 = s1)
+    if (this == &outra) {
+        return *this;
+    }
+
+    // 2. Cópia dos membros de dados
+    this->vetorSolucao = outra.vetorSolucao;
+    this->fAvaliacao = outra.fAvaliacao;
+    this->custoEnergia = outra.custoEnergia;
+    this->nInterrupcoes = outra.nInterrupcoes;
+    this->penalidade1 = outra.penalidade1;
+    this->penalidade2 = outra.penalidade2;
+    this->penalidade3 = outra.penalidade3;
+
+    // 3. Retorna a própria referência para permitir atribuições em cadeia (ex: a = b = c)
+    return *this;
+}
+
 std::ostream& operator<<(std::ostream& os, const Solucao &s){
   os << "Vetor Solução:" << std::endl;
 
