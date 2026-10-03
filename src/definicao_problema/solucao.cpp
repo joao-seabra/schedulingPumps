@@ -100,7 +100,7 @@ void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado
   for(Reservatorio &r : inst.reservatorios){
     nivel = r.getVolumeInicial();
     for(int i = 0; i < 24; i++){
-      nivel -= inst.consumo.at(i);
+      nivel -= r.getConsumo(i);
       for(int bombaAcoplada : r.getBombasAcopladas()){
         if(vetorS.at(i + (bombaAcoplada * 24))){
           nivel += inst.bombas.at(bombaAcoplada).getFluxo();

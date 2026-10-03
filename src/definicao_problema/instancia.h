@@ -9,10 +9,9 @@
 
 typedef struct Instancia{
   std::vector<Reservatorio> reservatorios;
-  int nReservatorios;
+  int nReservatorios = 0;
   std::vector<Bomba> bombas;
   int nBombas = 0;
-  std::vector<double> consumo;
 
   double tarifaPico = 0.0;
   double tarifaNormal = 0.0;

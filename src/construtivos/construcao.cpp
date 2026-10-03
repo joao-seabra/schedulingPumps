@@ -14,7 +14,7 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
     nivelReservatorio = r.getVolumeInicial();
     ativas = false;
     for(int i = 0; i < 24; i++){
-      nivelReservatorio -= inst.consumo.at(i);
+      nivelReservatorio -= r.getConsumo(i);
       if(ativas){
         for(int bombaAcoplada : r.getBombasAcopladas()){
           if(!s.getVetorSolucao().at(i + (bombaAcoplada * 24))){

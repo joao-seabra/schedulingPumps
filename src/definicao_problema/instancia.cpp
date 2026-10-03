@@ -68,18 +68,20 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
   int nDados;
   arquivoConsumo >> nDados;
 
-  result.consumo.reserve(nDados);
-
-  double dado;
-  while(arquivoConsumo >> dado){
-    result.consumo.push_back(dado);
+  if(nDados / 24 != result.nReservatorios){
+    std::cerr << "Arquivo de consumo deve conter exatamente 24 valores por reservatório(lidos: "
+            << nDados << ")\n";
+    std::exit(1);
   }
 
-  if ((int)result.consumo.size() != 24) {
-  std::cerr << "Arquivo de consumo deve conter exatamente 24 valores (lidos: "
-            << result.consumo.size() << ")\n";
-  std::exit(1);
-}
+  double dado;
+  for(int i = 0; i < result.nReservatorios; i++){
+    for(int j = 0; j < 24; j++){
+      arquivoConsumo >> dado;
+      result.reservatorios.at(i).adicionarConsumo(dado);
+    }
+  }
+
 
   return result;
 
@@ -99,18 +101,7 @@ std::ostream& operator<<(std::ostream& os, Instancia &inst){
   }
   os << std::fixed << std::setprecision(3)
       << "Tarifa de pico: R$" << inst.tarifaPico << " Tarifa Normal: R$" << inst.tarifaNormal;
-      
-  os << "\n\nConsumo:\n";
-  os << std::left << std::setprecision(1);
-    for(int j = 0; j < 24; j++){
-      os << std::setw(4) << j << " ";
-    }
-  os << std::endl;
 
-  os << std::left;
-  for(double d : inst.consumo){
-    os << std::setw(4) << d << " ";
-  }
 
   return os;
 }

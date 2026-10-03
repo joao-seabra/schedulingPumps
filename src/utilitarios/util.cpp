@@ -8,6 +8,7 @@ bool validaSolucao(const Instancia &inst, const Solucao &s){
   for(const Reservatorio &r : inst.reservatorios){
     nivelReservatorio = r.getVolumeInicial();
     for(int i = 0; i < 24; i++){
+      nivelReservatorio -= r.getConsumo(i);
       for(int bombaAcoplada : r.getBombasAcopladas()){
         if(s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
           nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
