@@ -8,50 +8,50 @@
 #include "../utilitarios/util.h"
 
 double solucaoBangBang(const Instancia &inst, Solucao &s){
-  double nivelReservatorio = inst.reservatorio.getVolumeInicial();
-
-  bool ativas = false;
-
-  for(int i = 0; i < 24; i++){
-    nivelReservatorio -= inst.consumo.at(i); //consome agua naquela hora
-
-    if(ativas){
-      for(int j = 0; j < inst.nBombas; j++){
-        if(!s.getVetorSolucao().at((i + (j * 24)))){
-          s.movimentoInversao((i + (j * 24)));
-        }
-        nivelReservatorio += inst.bombas.at(j).getFluxo(); //bombea agua caso a bomba esteja ativa
-      }
-    }
-    else{
-      for(int j = 0; j < inst.nBombas; j++){
-        if(s.getVetorSolucao().at((i + (j * 24)))){
-          s.movimentoInversao((i + (j * 24)));
+  double nivelReservatorio;
+  bool ativas;
+  for(const Reservatorio &r : inst.reservatorios){
+    nivelReservatorio = r.getVolumeInicial();
+    ativas = false;
+    for(int i = 0; i < 24; i++){
+      nivelReservatorio -= r.getConsumo(i);
+      if(ativas){
+        for(int bombaAcoplada : r.getBombasAcopladas()){
+          if(!s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
+            s.movimentoInversao(i + (bombaAcoplada * 24));
+          }
+          nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
         }
       }
-    }
-
-    if(nivelReservatorio < inst.reservatorio.getLimInferior()){
-      ativas = true;
-      for(int j = 0; j < inst.nBombas; j++){
-        if(!s.getVetorSolucao().at((i + (j * 24)))){
-          nivelReservatorio += inst.bombas.at(j).getFluxo();
-          s.movimentoInversao((i + (j * 24)));
+      else{
+        for(int bombaAcoplada : r.getBombasAcopladas()){
+          if(s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
+            s.movimentoInversao(i + (bombaAcoplada * 24));
+          }
         }
       }
-    }
 
-    else if(nivelReservatorio > inst.reservatorio.getVolumeMax()){
-      ativas = false;
-      for(int j = 0; j < inst.nBombas; j++){
-        if(s.getVetorSolucao().at((i + (j * 24)))){
-          s.movimentoInversao((i + (j * 24)));
+      if(nivelReservatorio < r.getLimInferior()){
+        ativas = true;
+        for(int bombaAcoplada : r.getBombasAcopladas()){
+          if(!s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
+            s.movimentoInversao(i + (bombaAcoplada * 24));
+            nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
+          }
         }
       }
-    }
 
+      else if(nivelReservatorio > r.getVolumeMax()){
+        ativas = false;
+        for(int bombaAcoplada : r.getBombasAcopladas()){
+          if(s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
+            s.movimentoInversao(i + (bombaAcoplada * 24));
+          }
+        }
+      }
+
+    }
   }
-
 
   return s.funcaoAvaliacao();
 }

@@ -8,23 +8,26 @@
 #include "reservatorio.h"
 
 typedef struct Instancia{
-  int nBombas = 0;
-  Reservatorio reservatorio = Reservatorio(0,0);
+  std::vector<Reservatorio> reservatorios;
+  int nReservatorios = 0;
   std::vector<Bomba> bombas;
-  std::vector<double> consumo;
+  int nBombas = 0;
 
   double tarifaPico = 0.0;
   double tarifaNormal = 0.0;
 } Instancia;
 
 /*Lê um arquivo txt com as informações do twls no formato:
-  CAPACIDADE_RESERVATORIO VOLUME_INICIAL N_BOMBAS TARIFA_PICO TARIFA_FORA_PICO
+  TARIFA_PICO TARIFA_FORA_PICO
+  TIPO CAPACIDADE_RESERVATORIO VOLUME_INICIAL
 
-  EFICIENCIA POTENCIA FLUXO H_TOPO
+  TIPO EFICIENCIA POTENCIA FLUXO H_TOPO REFERENCIA_AO_RESERVATORIO
 
   Lê um arquivo txt com as informações do consumo no formato:
   N
-  DADOS
+  DADO1
+  DADO2
+  DADON
 */
 Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nomeArquivoConsumo);
 
