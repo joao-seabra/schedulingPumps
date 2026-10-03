@@ -56,7 +56,7 @@ double Solucao::calculaEnergia(int &nInterrupcoes){
 }
 
 double Solucao::calculaCusto(int &nInterrupcoes){
-  return calculaEnergia(nInterrupcoes) / calculaLambda(nInterrupcoes);
+  return ( calculaEnergia(nInterrupcoes) ) / calculaLambda(nInterrupcoes);
 }
 
 double Solucao::calculaCusto(){
