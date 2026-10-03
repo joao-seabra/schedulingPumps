@@ -3,7 +3,7 @@
 #include <iomanip>
 
 #include "instancia.h"
-
+#include "../utilitarios/cronometro.h"
 
 double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);
 
@@ -94,34 +94,36 @@ void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada,
 }
 
 void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
-  double nivel = inst.reservatorio.getVolumeInicial();
   double excessoHora, faltaHora;
-  double totalExcedente = 0, totalFalta = 0;
-
-  for(int i = 0; i < 24; i++){
-    nivel -= inst.consumo.at(i);
-    for(int j = 0; j < inst.nBombas; j++){
-      if(vetorS.at(i + (j * 24))){
-        nivel += inst.bombas.at(j).getFluxo();
+  double totalExcedente = 0, totalFalta = 0, totalVariacao = 0;
+  double nivel;
+  for(Reservatorio &r : inst.reservatorios){
+    nivel = r.getVolumeInicial();
+    for(int i = 0; i < 24; i++){
+      nivel -= inst.consumo.at(i);
+      for(int bombaAcoplada : r.getBombasAcopladas()){
+        if(vetorS.at(i + (bombaAcoplada * 24))){
+          nivel += inst.bombas.at(bombaAcoplada).getFluxo();
+        }
       }
+    
+      faltaHora = r.getLimInferior() - nivel;
+      if(faltaHora > 0){
+        totalFalta += faltaHora;
+      }
+  
+      excessoHora = nivel - r.getVolumeMax();
+      if(excessoHora > 0){
+        totalExcedente += excessoHora;
+      }
+      
+      
     }
-
-    //calcula quao abaixo do nível o reservatorio esta naquele instante
-    faltaHora = inst.reservatorio.getLimInferior() - nivel;
-    if(faltaHora > 0){
-      totalFalta += faltaHora;
-    }
-
-    //calcula quao acima do nível o reservatorio esta naquele instante
-    excessoHora = nivel - inst.reservatorio.getVolumeMax();
-    // excessoHora = nivel - inst.reservatorio.getLimSuperior();
-    if(excessoHora > 0){
-      totalExcedente += excessoHora;
-    }
-
+    
+    totalVariacao += std::abs(r.getVolumeInicial() - nivel);
   }
 
-  variacaoDoNivelEncontrado = std::abs(inst.reservatorio.getVolumeInicial() - nivel);
+  variacaoDoNivelEncontrado = totalVariacao;
   excedenteEncontrado = totalExcedente;
   faltaEncontrada = totalFalta;
 }
@@ -129,7 +131,6 @@ void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado
 void Solucao::movimentoInversao(int i){
   fAvaliacao += calculaDeltaInversao(i, nInterrupcoes, custoEnergia);
   vetorSolucao[i] = !vetorSolucao[i];
-
 }
 
 void Solucao::movimentoTroca(int i, int j){

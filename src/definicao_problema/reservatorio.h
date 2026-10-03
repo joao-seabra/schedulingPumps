@@ -10,6 +10,7 @@ class Reservatorio{
     double lim_inferior;
     double lim_superior;
     double volume_inicial;
+    std::vector<int> bombasAcopladas;
   public:
     Reservatorio(double _volume_max, double _volume_atual):
       volume_inicial(_volume_atual){
@@ -25,12 +26,15 @@ class Reservatorio{
     double getLimInferior() const { return lim_inferior; }
     double getLimSuperior() const { return lim_superior; }
     double getVolumeInicial() const { return volume_inicial; }
+    const std::vector<int> &getBombasAcopladas() const { return bombasAcopladas; }
 
     // Setters
     void setVolumeMax(double v) { volume_max = v; }
     void setLimInferior(double v) { lim_inferior = v; }
     void setLimSuperior(double v) { lim_superior = v; }
     void setVolumeInicial(double v) { volume_inicial = v; }
+
+    void acoplarBomba(int bomba) { bombasAcopladas.push_back(bomba); }
 
 
     friend std::ostream& operator<<(std::ostream& os, Reservatorio &r){

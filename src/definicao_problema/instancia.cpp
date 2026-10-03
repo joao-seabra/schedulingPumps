@@ -42,7 +42,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
         std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
         exit(1);
       }
-      result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, &result.reservatorios.at(refReservatorio)));
+      result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, refReservatorio));
       result.nBombas++;
     }
     else{
@@ -51,6 +51,12 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
     }
   }
 
+  
+  int reservatorioReferenciado;
+  for(int i = 0; i < result.nBombas; i++){
+    reservatorioReferenciado = result.bombas.at(i).getReservatorioAcoplado();
+    result.reservatorios.at(reservatorioReferenciado).acoplarBomba(i);
+  }
 
   std::ifstream arquivoConsumo(nomeArquivoConsumo);
   if(!arquivoConsumo){
@@ -83,12 +89,12 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
 std::ostream& operator<<(std::ostream& os, Instancia &inst){
   os << "Numero de reservatorios: " << inst.nReservatorios << std::endl;
   os << "Reservatorios:\n";
-  for(Reservatorio r : inst.reservatorios){
+  for(Reservatorio &r : inst.reservatorios){
     os << r << std::endl;
   }
   os << "Numero de bombas: " << inst.nBombas << std::endl;
   os << "Bombas:\n";
-  for(Bomba b : inst.bombas){
+  for(Bomba &b : inst.bombas){
     os << b << std::endl;
   }
   os << std::fixed << std::setprecision(3)

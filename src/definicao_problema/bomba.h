@@ -12,10 +12,10 @@ class Bomba{
     double fluxo; //Fluxo nominal (m3/h)
     double alturaDeTopo; //Head height (mca)
     double eficiencia;
-    Reservatorio *res;
+    int reservatorioAcoplado;
   public:
-    Bomba(double _potencia, double _fluxo, double _alturaDeTopo, double _eficiencia, Reservatorio *_res):
-      potencia(_potencia), fluxo(_fluxo), alturaDeTopo(_alturaDeTopo), eficiencia(_eficiencia), res(_res){}
+    Bomba(double _potencia, double _fluxo, double _alturaDeTopo, double _eficiencia, int _reservatorioAcoplado):
+      potencia(_potencia), fluxo(_fluxo), alturaDeTopo(_alturaDeTopo), eficiencia(_eficiencia), reservatorioAcoplado(_reservatorioAcoplado){}
   
     virtual ~Bomba(){}
 
@@ -24,12 +24,14 @@ class Bomba{
     double getFluxo() const { return fluxo; }
     double getAlturaDeTopo() const { return alturaDeTopo; }
     double getEficiencia() const { return eficiencia; }
+    double getReservatorioAcoplado() const { return reservatorioAcoplado; }
 
     // Setters
     void setPotencia(double p) { potencia = p; }
     void setFluxo(double f) { fluxo = f; }
     void setAlturaDeTopo(double a) { alturaDeTopo = a; }
     void setEficiencia(double e) { eficiencia = e; }
+    void setReservatorioAcoplado(int r) { reservatorioAcoplado = r; }
 
     friend std::ostream& operator<<(std::ostream& os, const Bomba &b){
       os << std::fixed << std::setprecision(2);
