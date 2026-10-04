@@ -1,0 +1,10 @@
+# Nome          Switch           Tipo   Valores / Limites
+construcao      "--construcao "  c      (1, 2)
+alpha           "--alpha "       r      (0.80, 0.998)
+samax           "--samax "       i      (10, 500)
+beta            "--beta "        r      (1.05, 2.00)
+gamma           "--gamma "       r      (0.70, 0.99)
+tempfinal       "--tempfinal "   r      (0.0001, 1.0)
+penalidade1     "--penalidade1 " i      (1, 200)
+penalidade2     "--penalidade2 " i      (1, 200)
+penalidade3     "--penalidade3 " r      (0.001, 1)

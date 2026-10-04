@@ -1,6 +1,9 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include <vector>
+#include <cstdlib> 
+#include "CLI11.hpp"
 
 #include "definicao_problema/instancia.h"
 #include "definicao_problema/solucao.h"
@@ -14,165 +17,72 @@
 #include "meta_heuristicas/multiStart.h"
 #include "meta_heuristicas/simulatedAnnealing.h"
 
+int main (int argc, char* argv[]) {
 
-void imprimeSolucao(const Instancia &inst, Solucao &s);
+  CLI::App app{"Sintonia do Simulated Annealing via irace"};
+  std::string nomeInstancia;
+  int seed = 12345;
 
-int main(){
-  semente(1000);
+  //parametros a serem tunados
+  int construcao = 1;
+  double alpha = 0.99;
+  int saMax = 100;
+  double beta = 1.1;
+  double gamma = 0.95;
+  double tempFinal = 0.01;
+  int penalidade1 = 1;
+  int penalidade2 = 1;
+  double penalidade3 = 0.001;
 
-  double PENALIDADE1 = 100;
-  double PENALIDADE2 = 200;
-  double PENALIDADE3 = 0.05;
+      // Configuração do CLI11
+    app.add_option("-i,--instancia", nomeInstancia, "Nome da instância (ex: T1R2B)")->required();
+    app.add_option("--seed", seed, "Semente aleatória enviada pelo irace");
+    
+    // Configurações do construtivo e do SA
+    app.add_option("--construcao", construcao, "Construtivo: 1=Bang-Bang, 2=Aleatoria");
+    app.add_option("--alpha", alpha, "Taxa de resfriamento do SA");
+    app.add_option("--samax", saMax, "Número de iterações por temperatura (SAmax)");
+    app.add_option("--beta", beta, "Fator de aquecimento (cálculo Temp Inicial)");
+    app.add_option("--gamma", gamma, "Taxa de aceitação (cálculo Temp Inicial)");
+    app.add_option("--tempfinal", tempFinal, "Temperatura de parada");
+    app.add_option("--penalidade1", penalidade1, "penalidade de excesso");
+    app.add_option("--penalidade2", penalidade2, "penalidade de falta");
+    app.add_option("--penalidade3", penalidade3, "penalidade de variação do nível");
 
-  // const std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
-  // const std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
+    // Realiza o parse dos argumentos
+    CLI11_PARSE(app, argc, argv);
 
-  const std::string nomeArquivoTWLS("Instancia/T2R2B.txt");
-  const std::string nomeArquivoConsumo("Instancia/T2R2BCONSUMO.txt");
+    // Carrega a instância (mantendo a lógica original do seu código de concatenar pastas)
+    const std::string nomeArquivoTWLS = "Instancia/" + nomeInstancia + ".txt";
+    const std::string nomeArquivoConsumo = "Instancia/" + nomeInstancia + "CONSUMO.txt";
 
-  Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
-  Solucao s(inst, PENALIDADE1, PENALIDADE2, PENALIDADE3);
+    Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
+    Solucao s(inst, penalidade1, penalidade2, penalidade3);
+    
 
-  std::cout << "\nInstância:\n" << inst << std::endl;
-  std::cout << "\nSolução:\n";
-  imprimeSolucao(inst, s);
+    // Inicializa a semente
 
-  Cronometro *cron = nullptr;
-  int escolha = 0;
-  do {
-    escolha = menuPrincipal();
-    if (escolha != 0 && escolha != 1) {
-        std::cout << "\nLembre-se de gerar uma solucao" <<
-                "inicial caso necessario (opcao 1)!\n";
-        //continue;
+    semente(seed);
+
+
+    // 1. Fase de Construção Inicial (Apenas determinísticas puras ou totalmente aleatória)
+    if (construcao == 1) {
+        solucaoBangBang(inst, s);
+    } else if (construcao == 2) {
+        solucaoAleatoria(inst, s);
     }
+    // 2. Cálculo da Temperatura Inicial
+    double tempInicial = temperaturaInicial(inst, s, beta, gamma, saMax);
 
-    switch (escolha) {
-      case 1: { // Geração de uma solução inicial
-        switch (menuSolucaoInicial()) {
-          case 1: //Solução bang bang
-          cron = new Cronometro();
-          solucaoBangBang(inst, s);
-          std::cout << "\nSolucao construida pelo método Bang-Bang:\n";
-          break;
-          case 2: //solução aleatoria
-          cron = new Cronometro();
-          solucaoAleatoria(inst, s);
-          std::cout << "\nSolucao aleatória:\n";
-          break;
-        }
+    // 3. Execução do Simulated Annealing
+    double foFinal = simulatedAnnealing(inst, s, alpha, saMax, tempInicial, tempFinal);
 
-        if(cron != nullptr){
-            std::cout << std ::fixed << std::setprecision(8)
-                      << "Tempo de execução = " << cron->segundosDecorridos()
-                      << "s\n";
-          delete cron;
-          cron = nullptr;
-        }
-        imprimeSolucao(inst, s);
-        break;
-      }
-
-      case 2: { // Descida Randômica
-          std::cout << "\nDescida Randômica:\n";
-          cron = new Cronometro();
-          randomDescent(inst, s, 0.7 * 24 * inst.nBombas);
-          if(cron != nullptr){
-            std::cout << std ::fixed << std::setprecision(8)
-                      << "Tempo de execução = " << cron->segundosDecorridos()
-                      << "s\n";
-            delete cron;
-            cron = nullptr;
-          }
-          imprimeSolucao(inst, s);
-          break;
-      }
-
-      case 3: { // First improvement
-          std::cout << "\nPrimeira melhora:\n";
-          cron = new Cronometro();
-          firstImprovement(inst, s);
-          if(cron != nullptr){
-            std::cout << std ::fixed << std::setprecision(8)
-                      << "Tempo de execução = " << cron->segundosDecorridos()
-                      << "s\n";;
-            delete cron;
-            cron = nullptr;
-          }
-          imprimeSolucao(inst, s);
-          break;
-      }
-
-      case 4: { // multi-start
-          std::cout << "\nMulti-Start:\n";
-          cron = new Cronometro();
-          multistart(inst, s, 100);
-          if(cron != nullptr){
-            std::cout << std ::fixed << std::setprecision(8)
-                      << "Tempo de execução = " << cron->segundosDecorridos()
-                      << "s\n";
-            delete cron;
-            cron = nullptr;
-          }
-          imprimeSolucao(inst, s);
-          break;
-      }
-
-      case 5: { // Simulated Annealing
-          std::cout << "\nSimulated Annealing:\n";
-          cron = new Cronometro();
-
-          double tempInicial = temperaturaInicial(inst, s, 1.1, 0.98, 500);
-          std::cout << std::fixed << std::setprecision(2) 
-                    << "\nTemperatura Inicial: " << tempInicial << std::endl;
-          simulatedAnnealing(inst, s, 0.998, 10 * inst.nBombas * 24, tempInicial, 0.01);
-
-          if(cron != nullptr){
-            std::cout << std ::fixed << std::setprecision(8)
-                      << "Tempo de execução = " << cron->segundosDecorridos()
-                      << "s\n";
-            delete cron;
-            cron = nullptr;
-          }
-          imprimeSolucao(inst, s);
-          break;
-      }
-
-      case 6: { // Imprimir solução atual;
-        std::cout << "\nSolucao atual:\n";
-        imprimeSolucao(inst, s);
-        break;
-      }
-
-      case 7: { // Imprimir informações da Instância
-          std::cout << "\nInstância:\n" << inst << std::endl;
-          break;
-      }
-
-      default:
-          break;
-    }
-  } while (escolha != 0);
+    // 4. RETORNO OBRIGATÓRIO PARA O IRACE
+    // NENHUM outro std::cout deve ocorrer antes desta linha
+    std::cout << foFinal << std::endl;
 
 
 
   return 0;
 }
 
-void imprimeSolucao(const Instancia &inst, Solucao &s){
-  double falta, excedente, variacaoNivel;
-  s.calculaNivel(excedente, falta, variacaoNivel);
-  std::cout << std::fixed << std::setprecision(2);
-  std::cout << s << std::endl;
-  std::cout << "\nCusto de energia elétrica de s:" << s.getCustoEnergia() << std::endl;
-  std::cout << "\nExcedente de s:" << excedente << std::endl;
-  std::cout << "\nPenalidade por excedente de s:" << s.getPenalidade1() << std::endl;
-  std::cout << "\nFalta de s:" << falta << std::endl;
-  std::cout << "\nPenalidade por falta de s:" << s.getPenalidade2() << std::endl;
-  std::cout << "\nVariacao em relação ao volume inicial:" << variacaoNivel << std::endl;
-  std::cout << "\nPenalidade por variação de volume:" << s.getPenalidade3() << std::endl;
-
-  if (validaSolucao(inst, s)) std::cout << "\nSolução válida\n";
-  else std::cout << "\nSoulução Inválida\n";
-
-}
