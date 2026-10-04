@@ -14,41 +14,56 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
         std::exit(1);
   }
   Instancia result;
+  result.nReservatorios = 0;
+  result.nBombas = 0;
 
   char tipo;
+  
   double tarifaPico, tarifaNormal;
-
-  arquivoTWLS >> tarifaPico >> tarifaNormal;
-
+  
   double capacidade, volumeInicial;
-
   double eficiencia, potencia, fluxo, htopo;
   int refReservatorio;
 
-  result.nReservatorios = 0;
-  result.nBombas = 0;
-  result.tarifaNormal = tarifaNormal;
-  result.tarifaPico = tarifaPico;
 
   while(arquivoTWLS >> tipo){
-    if(std::tolower(tipo) == 'r'){
-      arquivoTWLS >> capacidade >> volumeInicial;
-      result.reservatorios.push_back(Reservatorio(capacidade, volumeInicial));
-      result.nReservatorios++;
-    }
-    else if(std::tolower(tipo) == 'b'){
-      arquivoTWLS >> eficiencia >> potencia >> fluxo >> htopo >> refReservatorio;
-      if(refReservatorio + 1 > result.nReservatorios){
-        std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
-        exit(1);
+    switch (std::tolower(tipo)){
+      case 'r':{
+        arquivoTWLS >> capacidade >> volumeInicial;
+        result.reservatorios.push_back(Reservatorio(capacidade, volumeInicial));
+        result.nReservatorios++;
+        break;
       }
-      result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, refReservatorio));
-      result.nBombas++;
+      case 'b': {
+        arquivoTWLS >> eficiencia >> potencia >> fluxo >> htopo >> refReservatorio;
+        if(refReservatorio + 1 > result.nReservatorios){
+          std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
+          exit(1);
+        }
+        result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, refReservatorio));
+        result.nBombas++;
+        break;
+      }
+      case 't':{
+        arquivoTWLS >> tarifaPico >> tarifaNormal;
+        result.tarifaNormal = tarifaNormal;
+        result.tarifaPico = tarifaPico;
+        break;
+      }
+      case '#':
+        arquivoTWLS.ignore(1000, '\n');
+        break;
+      case '\n':
+        arquivoTWLS.ignore(1000, '\n');
+        break;
+      
+      default:{
+        std::cerr << "Tipo indefinido no arquivo de INFO" << std::endl;
+        exit(1);
+        break;
+      }
     }
-    else{
-      std::cerr << "Tipo indefinido no arquivo de INFO" << std::endl;
-      exit(1);
-    }
+
   }
 
   
