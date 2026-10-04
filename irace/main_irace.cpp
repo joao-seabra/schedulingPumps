@@ -1,21 +1,20 @@
 #include <iostream>
-#include <iomanip>
 #include <string>
 #include <vector>
 #include <cstdlib> 
 #include "CLI11.hpp"
 
-#include "definicao_problema/instancia.h"
-#include "definicao_problema/solucao.h"
-#include "utilitarios/cronometro.h"
-#include "utilitarios/util.h"
-#include "utilitarios/aleatorio.h"
-#include "interfaces/menu.h"
+#include "../src/definicao_problema/instancia.h"
+#include "../src/definicao_problema/solucao.h"
+#include "../src/utilitarios/cronometro.h"
+#include "../src/utilitarios/util.h"
+#include "../src/utilitarios/aleatorio.h"
+#include "../src/interfaces/menu.h"
 
-#include "construtivos/construcao.h"
-#include "refinamento/descida.h"
-#include "meta_heuristicas/multiStart.h"
-#include "meta_heuristicas/simulatedAnnealing.h"
+#include "../src/construtivos/construcao.h"
+#include "../src/refinamento/descida.h"
+#include "../src/meta_heuristicas/multiStart.h"
+#include "../src/meta_heuristicas/simulatedAnnealing.h"
 
 int main (int argc, char* argv[]) {
 

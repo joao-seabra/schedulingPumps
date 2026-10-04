@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # O nome correto do seu executável C++ compilado pelo Makefile é ./exe
-EXE="./exe"
+EXE="./exe_irace"
 
 # Captura os argumentos padrões que o irace manda em todas as execuções
 CONFIG_ID=$1
