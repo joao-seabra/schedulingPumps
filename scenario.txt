@@ -1,0 +1,15 @@
+# ==============================================================================
+# ARQUIVO DE CENÁRIO DE CONFIGURAÇÃO (scenario.txt)
+# ==============================================================================
+
+# Orçamento computacional máximo de execuções
+maxExperiments = 2000
+
+# Arquivos essenciais
+parameterFile = "./parameters.txt"
+targetRunner  = "./target-runner"
+
+# Em vez de apontar para uma pasta cheia de arquivos vazios, 
+# apontamos diretamente para o arquivo de texto com a lista de instâncias:
+trainInstancesFile = "./instances-list.txt"
+trainInstancesDir  = ""

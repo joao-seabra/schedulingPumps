@@ -24,8 +24,11 @@ int main(){
   double PENALIDADE2 = 200;
   double PENALIDADE3 = 0.05;
 
-  const std::string nomeArquivoTWLS("Instancia/TWLS_INFO.txt");
-  const std::string nomeArquivoConsumo("Instancia/INFO_CONSUMO.txt");
+  // const std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
+  // const std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
+
+  const std::string nomeArquivoTWLS("Instancia/T2R2B.txt");
+  const std::string nomeArquivoConsumo("Instancia/T2R2BCONSUMO.txt");
 
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
   Solucao s(inst, PENALIDADE1, PENALIDADE2, PENALIDADE3);

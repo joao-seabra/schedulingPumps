@@ -62,6 +62,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS)
 run: all
 	./$(EXECUTAVEL)
 
+irace: all
+	@echo 'A iniciar o processo do irace...'
+	Rscript -e "scenario <- irace::readScenario(filename = 'scenario.txt'); irace::irace(scenario = scenario)"
+
+
 clean:
 	@echo 'Limpando o projeto...'
 	$(CLEANCMD)

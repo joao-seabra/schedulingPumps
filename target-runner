@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# O nome correto do seu executável C++ compilado pelo Makefile é ./exe
+EXE="./exe"
+
+# Captura os argumentos padrões que o irace manda em todas as execuções
+CONFIG_ID=$1
+INSTANCE_ID=$2
+SEED=$3
+INSTANCE_FILE=$4
+shift 4
+
+# O resto da linha são os parâmetros gerados pelo irace (--alpha 0.9 --samax 100 ...)
+CONFIG_PARAMS=$*
+
+# Extrai o nome base da instância (ex: "C50")
+BASENAME=$(basename $INSTANCE_FILE)
+
+# Arquivos temporários para salvar a saída do C++ para não sujar o terminal do irace
+STDOUT="sa_${CONFIG_ID}_${INSTANCE_ID}.stdout"
+STDERR="sa_${CONFIG_ID}_${INSTANCE_ID}.stderr"
+
+# Roda o seu executável passando os argumentos do CLI11
+$EXE -i $BASENAME --seed $SEED $CONFIG_PARAMS > $STDOUT 2> $STDERR
+
+# Lê APENAS O NÚMERO (custo) de dentro do arquivo e o imprime na tela para o irace capturar
+COST=$(cat $STDOUT | grep -o -E '[0-9]+(\.[0-9]+)?')
+echo "$COST"
+
+# Remove os arquivos temporários
+rm -f $STDOUT $STDERR
