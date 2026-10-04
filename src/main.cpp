@@ -61,7 +61,6 @@ int main (int argc, char* argv[]) {
     
 
     // Inicializa a semente
-
     semente(seed);
 
 
