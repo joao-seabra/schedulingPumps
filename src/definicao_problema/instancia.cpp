@@ -3,6 +3,9 @@
 #include <iomanip>
 #include <fstream>
 
+#include <cctype>
+#include <cstdlib>
+
 
 
 
@@ -36,7 +39,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
       }
       case 'b': {
         arquivoTWLS >> eficiencia >> potencia >> fluxo >> htopo >> refReservatorio;
-        if(refReservatorio + 1 > result.nReservatorios){
+        if(refReservatorio + 1 > result.nReservatorios || refReservatorio < 0){
           std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
           exit(1);
         }
@@ -51,9 +54,6 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
         break;
       }
       case '#':
-        arquivoTWLS.ignore(1000, '\n');
-        break;
-      case '\n':
         arquivoTWLS.ignore(1000, '\n');
         break;
       
@@ -83,7 +83,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
   int nDados;
   arquivoConsumo >> nDados;
 
-  if(nDados / 24 != result.nReservatorios){
+  if(nDados != 24 * result.nReservatorios){
     std::cerr << "Arquivo de consumo deve conter exatamente 24 valores por reservatório(lidos: "
             << nDados << ")\n";
     std::exit(1);

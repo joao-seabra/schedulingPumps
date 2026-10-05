@@ -48,6 +48,7 @@ bool validaEImprimeSolucao(const Instancia &inst, const Solucao &s){
     std::cout << std::endl;
     if(horaInvalida > 0){
       std::cout << "\nUltima Hora inválida: " << horaInvalida;
+      horaInvalida = -1;
     }
   }
   

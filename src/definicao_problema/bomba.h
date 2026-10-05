@@ -24,7 +24,7 @@ class Bomba{
     double getFluxo() const { return fluxo; }
     double getAlturaDeTopo() const { return alturaDeTopo; }
     double getEficiencia() const { return eficiencia; }
-    double getReservatorioAcoplado() const { return reservatorioAcoplado; }
+    int getReservatorioAcoplado() const { return reservatorioAcoplado; }
 
     // Setters
     void setPotencia(double p) { potencia = p; }

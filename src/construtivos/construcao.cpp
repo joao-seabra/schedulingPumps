@@ -8,49 +8,41 @@
 #include "../utilitarios/util.h"
 
 double solucaoBangBang(const Instancia &inst, Solucao &s){
-  double nivelReservatorio;
+  double nivelReservatorio, fluxoTotal, base;
   bool ativas;
   for(const Reservatorio &r : inst.reservatorios){
+    fluxoTotal = 0;
+    for(int b : r.getBombasAcopladas()){
+      fluxoTotal += inst.bombas.at(b).getFluxo();
+    }  
+
     nivelReservatorio = r.getVolumeInicial();
     ativas = false;
     for(int i = 0; i < 24; i++){
-      nivelReservatorio -= r.getConsumo(i);
-      if(ativas){
-        for(int bombaAcoplada : r.getBombasAcopladas()){
-          if(!s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
-            s.movimentoInversao(i + (bombaAcoplada * 24));
-          }
-          nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
+      base = nivelReservatorio - r.getConsumo(i);
+
+      if(ativas && base + fluxoTotal > r.getVolumeMax()){
+        ativas = false;
+      }
+
+      if(base < r.getLimInferior()){
+        ativas = true;
+      }
+
+      for(int b : r.getBombasAcopladas()){
+        if(s.getVetorSolucao().at(i + (b * 24)) != ativas){
+          s.movimentoInversao(i + (b * 24));
         }
+      }
+      if(ativas){
+        nivelReservatorio = base + fluxoTotal;
       }
       else{
-        for(int bombaAcoplada : r.getBombasAcopladas()){
-          if(s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
-            s.movimentoInversao(i + (bombaAcoplada * 24));
-          }
-        }
+        nivelReservatorio = base;
       }
-
-      if(nivelReservatorio < r.getLimInferior()){
-        ativas = true;
-        for(int bombaAcoplada : r.getBombasAcopladas()){
-          if(!s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
-            s.movimentoInversao(i + (bombaAcoplada * 24));
-            nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
-          }
-        }
-      }
-
-      else if(nivelReservatorio > r.getVolumeMax()){
-        ativas = false;
-        for(int bombaAcoplada : r.getBombasAcopladas()){
-          if(s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
-            s.movimentoInversao(i + (bombaAcoplada * 24));
-          }
-        }
-      }
-
+      
     }
+
   }
 
   return s.funcaoAvaliacao();

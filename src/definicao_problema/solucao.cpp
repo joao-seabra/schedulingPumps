@@ -57,7 +57,8 @@ double Solucao::calculaEnergia(int &nInterrupcoes){
 }
 
 double Solucao::calculaCusto(int &nInterrupcoes){
-  return ( calculaEnergia(nInterrupcoes) ) / calculaLambda(nInterrupcoes);
+  double energia = calculaEnergia(nInterrupcoes);
+  return energia  / calculaLambda(nInterrupcoes);
 }
 
 double Solucao::calculaCusto(){
@@ -68,10 +69,12 @@ double Solucao::calculaCusto(){
 
 
 double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa){
-  double vazao = bomba.getFluxo() / 3600.0; // m3/h para m3/s
-  double potenciaW = PESO_ESPECIFICO_AGUA * vazao * bomba.getAlturaDeTopo() / bomba.getEficiencia();
-  double potenciakW = potenciaW / 1000.0;
-  return potenciakW * tarifa;
+  // double vazao = bomba.getFluxo() / 3600.0; // m3/h para m3/s
+  // double potenciaW = PESO_ESPECIFICO_AGUA * vazao * bomba.getAlturaDeTopo() / bomba.getEficiencia();
+  // double potenciakW = potenciaW / 1000.0;
+  // return potenciakW * tarifa;
+
+  return bomba.getPotencia() * tarifa;
 }
 
 double Solucao::calculaLambda(int nInterrupcoes){

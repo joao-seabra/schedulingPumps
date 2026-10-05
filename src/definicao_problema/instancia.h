@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 #include "bomba.h"
 #include "reservatorio.h"
