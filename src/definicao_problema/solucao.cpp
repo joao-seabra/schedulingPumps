@@ -4,8 +4,9 @@
 
 #include "instancia.h"
 #include "../utilitarios/cronometro.h"
+#include <cmath>
 
-double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);
+  double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);
 
 double Solucao::calculaEnergia(int &nInterrupcoes){
   double custoEnergia = 0;
@@ -217,6 +218,19 @@ bool Solucao::alteraVetorSolucao(std::vector<bool> novaSolucao){
   return true;
 }
 
+double custoPorM3(const Bomba &b, double tarifa){
+  return calculaCustoEnergiaInstantaneo(b, tarifa) / b.getFluxo();
+}
+
+double Solucao::calculaPenalidade3(){
+  double media = 0;
+  for(const Bomba &b:inst.bombas){
+    media += custoPorM3(b, inst.tarifaNormal);
+  }
+  media /= inst.nBombas;
+  media = std::round(media * 1000) / 1000.0;
+  return media;
+}
 
 Solucao& Solucao::operator=(const Solucao& s2) {
     if (this == &s2) {

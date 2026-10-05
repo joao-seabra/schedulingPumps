@@ -22,11 +22,12 @@ int main(){
 
   const double penalidade1 = 139;
   const double penalidade2 = 177;
-  const double penalidade3 = 0.02;
-
+  // const double penalidade3 = 0.02;
+  const double penalidade3 = -1;
+  
   const std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
   const std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
-
+  
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
   Solucao s(inst, penalidade1, penalidade2, penalidade3);
 
