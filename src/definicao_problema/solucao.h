@@ -28,11 +28,9 @@ class Solucao{
     double calculaLambda(int nInterrupcoes);
     double calculaPenalidade3();
   public:
-    Solucao(Instancia &_inst, double _penalidade1 = 1000, double _penalidade2 = 1000, double _penalidade3 = -1):
+    Solucao(Instancia &_inst, double _penalidade1 = 1000.0, double _penalidade2 = 1000.0, double _penalidade3 = 0.0):
     inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2), penalidade3(_penalidade3){
-      if(penalidade3 == -1){
-        penalidade3 = calculaPenalidade3();
-      }
+      penalidade3 += calculaPenalidade3();
       nInterrupcoes = 0;
       vetorSolucao.assign(24 * inst.nBombas, false); //inicializa vetor solução 
       funcaoAvaliacao();

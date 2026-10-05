@@ -31,7 +31,7 @@ int main (int argc, char* argv[]) {
   double tempFinal = 0.01;
   int penalidade1 = 1;
   int penalidade2 = 1;
-  double penalidade3 = 0.01;
+  double penalidade3 = 0.0;
 
       // Configuração do CLI11
     app.add_option("-i,--instancia", nomeInstancia, "Nome da instância (ex: T1R2B)")->required();

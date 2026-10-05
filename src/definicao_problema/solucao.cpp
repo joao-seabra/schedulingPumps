@@ -95,7 +95,7 @@ void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada,
 }
 
 void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
-  double excessoHora, faltaHora;
+  double excessoHora, faltaHora, variacaoDia;
   double totalExcedente = 0, totalFalta = 0, totalVariacao = 0;
   double nivel;
   for(Reservatorio &r : inst.reservatorios){
@@ -120,8 +120,12 @@ void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado
       
       
     }
+    // totalVariacao += std::abs(r.getVolumeInicial() - nivel);
+    variacaoDia = r.getVolumeInicial() - nivel;
+    if(variacaoDia > 0){
+      totalVariacao += variacaoDia;
+    } 
     
-    totalVariacao += std::abs(r.getVolumeInicial() - nivel);
   }
 
   variacaoDoNivelEncontrado = totalVariacao;
