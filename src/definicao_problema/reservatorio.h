@@ -43,7 +43,7 @@ class Reservatorio{
     void adicionarConsumo(double c) { consumo.push_back(c); }
 
 
-    friend std::ostream& operator<<(std::ostream& os, Reservatorio &r){
+    friend std::ostream& operator<<(std::ostream& os, const Reservatorio &r){
       os << std::fixed << std::setprecision(2);
       os << "Volume Max: " << r.volume_max << "m3\n";
       os << "Volume min: " << r.lim_inferior << "m3\n";

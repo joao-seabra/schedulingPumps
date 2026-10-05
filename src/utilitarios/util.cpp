@@ -23,10 +23,33 @@ bool validaSolucao(const Instancia &inst, const Solucao &s){
   return true;
 }
 
-//TODO
-
-bool validaSolucao(const Instancia &inst, const std::vector<bool> &s){
-//todo
-  std::cout << "Ainda não fiz, talvez precise no futuro" << std::endl;
-  return false;
+bool validaEImprimeSolucao(const Instancia &inst, const Solucao &s){
+  double nivelReservatorio;
+  bool result = true;
+  int horaInvalida = -1;
+  for(const Reservatorio &r : inst.reservatorios){
+    nivelReservatorio = r.getVolumeInicial();
+    std::cout << "\nReservatório:\n" << r << std::endl;
+    std::cout << "\nHora | Volume\n";
+    std::cout << std::left;
+    for(int i = 0; i < 24; i++){
+      nivelReservatorio -= r.getConsumo(i);
+      for(int bombaAcoplada : r.getBombasAcopladas()){
+        if(s.getVetorSolucao().at(i + (bombaAcoplada * 24))){
+          nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
+        }
+      }
+      std::cout << std::setw(2) << i << "   | " << nivelReservatorio << "\n";
+      if(nivelReservatorio < 0 || nivelReservatorio > r.getVolumeMax()){
+        result = false;
+        horaInvalida = i;
+      }
+    }
+    std::cout << std::endl;
+    if(horaInvalida > 0){
+      std::cout << "\nUltima Hora inválida: " << horaInvalida;
+    }
+  }
+  
+  return result;
 }

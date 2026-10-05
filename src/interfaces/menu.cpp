@@ -16,10 +16,11 @@ int menuPrincipal()
 
                    << "                6. Imprimir solução atual \n"
                    << "                7. Imprimir Informações da Instância \n"
+                   << "                8. Imprimir Informações dos níveis dos reservatorios \n"
                    << "                0. Sair \n"
                    << "                Escolha: ";
         std::cin >> escolha;
-    } while (escolha < 0 || escolha > 7);
+    } while (escolha < 0 || escolha > 8);
     return escolha;
 }
 

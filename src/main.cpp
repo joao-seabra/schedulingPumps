@@ -148,6 +148,11 @@ int main(){
           break;
       }
 
+      case 8: {
+        validaEImprimeSolucao(inst, s);
+        break;
+      }
+
       default:
           break;
     }
