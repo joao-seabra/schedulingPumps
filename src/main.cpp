@@ -20,9 +20,9 @@ void imprimeSolucao(const Instancia &inst, Solucao &s);
 int main(){
   semente(1000);
 
-  const double penalidade1 = 51;
-  const double penalidade2 = 186;
-  const double penalidade3 = 0.012;
+  const double penalidade1 = 139;
+  const double penalidade2 = 177;
+  const double penalidade3 = 0.02;
 
   const std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
   const std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
@@ -120,10 +120,10 @@ int main(){
           cron = new Cronometro();
 
           int saMAX = 348;
-          double tempInicial = temperaturaInicial(inst, s, 1.1, 0.96, saMAX);
+          double tempInicial = temperaturaInicial(inst, s, 1.11, 0.927, saMAX);
           std::cout << std::fixed << std::setprecision(2) 
                     << "\nTemperatura Inicial: " << tempInicial << std::endl;
-          simulatedAnnealing(inst, s, 0.924, saMAX, tempInicial, 0.35);
+          simulatedAnnealing(inst, s, 0.974, saMAX, tempInicial, 0.054);
 
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
