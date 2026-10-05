@@ -144,8 +144,8 @@ int main(){
       }
 
       case 7: { // Imprimir informações da Instância
-          std::cout << "\nInstância:\n" << inst << std::endl;
-          break;
+        std::cout << "\nInstância:\n" << inst << std::endl;
+        break;
       }
 
       case 8: {
