@@ -48,7 +48,7 @@ int main(int argc, char const *argv[]){
   do {
     escolha = menuPrincipal();
     if (escolha != 0 && escolha != 1) {
-        std::cout << "\nLembre-se de gerar uma solucao" <<
+        std::cout << "\nLembre-se de gerar uma solucao " <<
                 "inicial caso necessario (opcao 1)!\n";
         //continue;
     }

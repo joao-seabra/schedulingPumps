@@ -22,7 +22,7 @@ class Solucao{
 
     double calculaCusto(int &nInterrupcoes);
 
-    void calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
+    void calculaNivel(std::vector<bool> &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
     double calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia);
     double calculaEnergia(int &nInterrupcoes);
     double calculaLambda(int nInterrupcoes);

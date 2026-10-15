@@ -97,7 +97,7 @@ void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada,
   calculaNivel(vetorSolucao, excedenteEncontrado, faltaEncontrada, variacaoDoNivelEncontrado);
 }
 
-void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
+void Solucao::calculaNivel(std::vector<bool> &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
   double excessoHora, faltaHora, variacaoDia;
   double totalExcedente = 0, totalFalta = 0, totalVariacao = 0;
   double nivel;
