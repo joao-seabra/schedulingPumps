@@ -84,7 +84,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 run: all
-	./$(EXECUTAVEL)
+	./$(EXECUTAVEL) 
 
 # CORRECAO: depende do exe_irace (antes dependia de 'all', que nao gera o exe_irace)
 irace: $(EXECUTAVEL_IRACE)

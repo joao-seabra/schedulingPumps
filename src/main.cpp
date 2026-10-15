@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include <vector>
 
 #include "definicao_problema/instancia.h"
@@ -13,21 +14,28 @@
 #include "refinamento/descida.h"
 #include "meta_heuristicas/multiStart.h"
 #include "meta_heuristicas/simulatedAnnealing.h"
+#include <cstring>
 
 
 void imprimeSolucao(const Instancia &inst, Solucao &s);
 
-int main(){
+
+int main(int argc, char const *argv[]){
   semente(1000);
 
   const double penalidade1 = 139;
   const double penalidade2 = 177;
   // const double penalidade3 = 0.02;
-  const double penalidade3 = +0.003;
+  const double penalidade3 = 0.01;
   
-  const std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
-  const std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
-  
+  std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
+  std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
+
+  if(argc > 2){
+    nomeArquivoTWLS = argv[1];
+    nomeArquivoConsumo = argv[2];
+  }
+
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
   Solucao s(inst, penalidade1, penalidade2, penalidade3);
 
