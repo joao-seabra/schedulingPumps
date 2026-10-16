@@ -26,7 +26,7 @@ int main(int argc, char const *argv[]){
   const double penalidade1 = 139;
   const double penalidade2 = 177;
   // const double penalidade3 = 0.02;
-  const double penalidade3 = 0.01;
+  const double penalidade3 = 0.00;
   
   std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
   std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
