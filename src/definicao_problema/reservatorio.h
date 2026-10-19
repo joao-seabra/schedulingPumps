@@ -52,7 +52,7 @@ class Reservatorio{
 
       os << "Consumo:\n";
       os << std::left << std::setprecision(1);
-      for(int j = 0; j < 24; j++){
+      for(int j = 0; j < r.consumo.size(); j++){
         os << std::setw(4) << j << " ";
       }
       os << std::endl;

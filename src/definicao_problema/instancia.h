@@ -14,8 +14,10 @@ typedef struct Instancia{
   std::vector<Bomba> bombas;
   int nBombas = 0;
 
+  int nHoras = 24;
   double tarifaPico = 0.0;
   double tarifaNormal = 0.0;
+  std::vector<double> tarifaPorHora;
 } Instancia;
 
 /*Lê um arquivo txt com as informações do twls no formato:
