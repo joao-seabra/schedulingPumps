@@ -6,3 +6,4 @@ exe
 *.Rdata
 *.stderr
 *.stdout
+/.vscode
