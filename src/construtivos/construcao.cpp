@@ -18,7 +18,7 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
 
     nivelReservatorio = r.getVolumeInicial();
     ativas = false;
-    for(int i = 0; i < 24; i++){
+    for(int i = 0; i < inst.nHoras; i++){
       base = nivelReservatorio - r.getConsumo(i);
 
       if(ativas && base + fluxoTotal > r.getVolumeMax()){
@@ -30,8 +30,8 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
       }
 
       for(int b : r.getBombasAcopladas()){
-        if(s.getVetorSolucao().at(i + (b * 24)) != ativas){
-          s.movimentoInversao(i + (b * 24));
+        if(s.getVetorSolucao().at(i + (b * inst.nHoras)) != ativas){
+          s.movimentoInversao(i + (b * inst.nHoras));
         }
       }
       if(ativas){
@@ -49,7 +49,7 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
 }
 
 double solucaoAleatoria(const Instancia &inst, Solucao &s){
-  int tam = 24 * inst.nBombas;
+  int tam = inst.nHoras * inst.nBombas;
   
   std::vector<bool> vetorAleatorio;
   

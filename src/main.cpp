@@ -82,7 +82,7 @@ int main(int argc, char const *argv[]){
       case 2: { // Descida Randômica
           std::cout << "\nDescida Randômica:\n";
           cron = new Cronometro();
-          randomDescent(inst, s, 0.7 * 24 * inst.nBombas);
+          randomDescent(inst, s, 0.7 * inst.nHoras * inst.nBombas);
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
                       << "Tempo de execução = " << cron->segundosDecorridos()

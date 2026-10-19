@@ -32,7 +32,7 @@ class Solucao{
     inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2), penalidade3(_penalidade3){
       penalidade3 += calculaPenalidade3();
       nInterrupcoes = 0;
-      vetorSolucao.assign(24 * inst.nBombas, false); //inicializa vetor solução 
+      vetorSolucao.assign(inst.nHoras * inst.nBombas, false); //inicializa vetor solução 
       funcaoAvaliacao();
     }
 

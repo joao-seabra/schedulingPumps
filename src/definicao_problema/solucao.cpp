@@ -9,46 +9,22 @@
   double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);
 
 double Solucao::calculaEnergia(int &nInterrupcoes){
-  double custoEnergia = 0;
+  double custoEnergia = 0, tarifa = 0;;
 
   nInterrupcoes = 0;
 
-  for(int i = 0; i < 18; i++){ //percorre o vetor em cada hora de não pico
+  for(int i = 0; i < inst.nHoras; i++){ //percorre o vetor em cada hora
+    tarifa = inst.tarifaPorHora[i];
     for(int j = 0; j < inst.nBombas; j++){
-      if(vetorSolucao.at((i + (j * 24)))){ //se a bomba j estiver ativa na hora i
-        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), inst.tarifaNormal);
+      if(vetorSolucao.at((i + (j * inst.nHoras)))){ //se a bomba j estiver ativa na hora i
+        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), tarifa);
       }
-      if(vetorSolucao.at((i + (j * 24))) != vetorSolucao.at((i + 1 + (j * 24)))){
-        //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-        nInterrupcoes++;
-      }
-    }
-  }
-
-  for(int i = 18; i < 21; i++){ //percorre o vetor em cada hora de pico
-    for(int j = 0; j < inst.nBombas; j++){
-      if(vetorSolucao.at((i + (j * 24)))){ //se a bomba j estiver ativa na hora i
-        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), inst.tarifaPico);
-      }
-      if(vetorSolucao.at((i + (j * 24))) != vetorSolucao.at((i + 1 + (j * 24)))){
-        //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-        nInterrupcoes++;
-      }
-    }
-  }
-
-  for(int i = 21; i < 24; i++){
-    for(int j = 0; j < inst.nBombas; j++){
-      if(vetorSolucao.at((i + (j * 24)))){ //se a bomba j estiver ativa na hora i
-        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), inst.tarifaNormal);
-      }
-      if(i < 23){
-        if(vetorSolucao.at((i + (j * 24))) != vetorSolucao.at((i + 1 + (j * 24)))){
-        //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-        nInterrupcoes++;
+      if(i + 1 < inst.nHoras){
+        if(vetorSolucao.at((i + (j * inst.nHoras))) != vetorSolucao.at((i + 1 + (j * inst.nHoras)))){
+          //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
+          nInterrupcoes++;
         }
       }
-      
     }
   }
 
@@ -103,10 +79,10 @@ void Solucao::calculaNivel(std::vector<bool> &vetorS, double &excedenteEncontrad
   double nivel;
   for(Reservatorio &r : inst.reservatorios){
     nivel = r.getVolumeInicial();
-    for(int i = 0; i < 24; i++){
+    for(int i = 0; i < inst.nHoras; i++){
       nivel -= r.getConsumo(i);
       for(int bombaAcoplada : r.getBombasAcopladas()){
-        if(vetorS.at(i + (bombaAcoplada * 24))){
+        if(vetorS.at(i + (bombaAcoplada * inst.nHoras))){
           nivel += inst.bombas.at(bombaAcoplada).getFluxo();
         }
       }
@@ -149,12 +125,11 @@ void Solucao::movimentoTroca(int i, int j){
 }
 
 double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia){
-  int bomba = i / 24;
-  int hora = i % 24;
+  int bomba = i / inst.nHoras;
+  int hora = i % inst.nHoras;
   
-  double custoEnergiaInstantaneo = (hora < 18 || hora >= 21) ? 
-  calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaNormal) : calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaPico);
-  
+  double custoEnergiaInstantaneo = calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaPorHora.at(hora));
+
   if(!vetorSolucao.at(i)){
     novo_custoEnergia = custoEnergia + custoEnergiaInstantaneo;
   }
@@ -173,7 +148,7 @@ double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &n
       novo_numInterrupcoes--;
     }
   }
-  if(hora < 23){
+  if(hora + 1 < inst.nHoras){
     if(!vetorSolucao.at(i) != vetorSolucao.at(i + 1)){
       //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
       novo_numInterrupcoes++;
@@ -260,7 +235,7 @@ std::ostream& operator<<(std::ostream& os, const Solucao &s){
 
   os << std::left;
   for(int i = 0; i < s.inst.nBombas; i++){
-    for(int j = 0; j < 24; j++){
+    for(int j = 0; j < s.inst.nHoras; j++){
       os << std::setw(2) << j << " ";
     }
 
