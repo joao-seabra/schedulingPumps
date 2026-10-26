@@ -16,11 +16,9 @@ double Solucao::calculaEnergia(int &nInterrupcoes){
   for(int i = 0; i < inst.nHoras; i++){ //percorre o vetor em cada hora
     tarifa = inst.tarifaPorHora[i];
     for(int j = 0; j < inst.nBombas; j++){
-      if(vetorSolucao.at((i + (j * inst.nHoras)))){ //se a bomba j estiver ativa na hora i
-        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), tarifa);
-      }
+      custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), tarifa) * vetorSolucao.at((i + (j * inst.nHoras)));
       if(i + 1 < inst.nHoras){
-        if(vetorSolucao.at((i + (j * inst.nHoras))) != vetorSolucao.at((i + 1 + (j * inst.nHoras)))){
+        if((bool) vetorSolucao.at((i + (j * inst.nHoras))) != (bool) vetorSolucao.at((i + 1 + (j * inst.nHoras)))){
           //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
           nInterrupcoes++;
         }
