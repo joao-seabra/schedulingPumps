@@ -36,7 +36,7 @@ class Solucao{
     inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2), penalidade3(_penalidade3){
       penalidade3 += calculaPenalidade3();
       nInterrupcoes = 0;
-      vetorSolucao.assign(inst.nHoras * inst.nBombas, 0); //inicializa vetor solução 
+      zerarVetorSolucao(); //inicializa vetor solução com 0
       funcaoAvaliacao();
     }
 
@@ -74,6 +74,7 @@ class Solucao{
     void movimentoDesligarBomba(int i);
 
     bool alteraVetorSolucao(TipoSolucao novaSolucao);
+    void zerarVetorSolucao();
 
     friend std::ostream& operator<<(std::ostream& os, const Solucao &s);
     Solucao& operator=(const Solucao& s2);

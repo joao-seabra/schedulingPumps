@@ -252,6 +252,10 @@ bool Solucao::alteraVetorSolucao(TipoSolucao novaSolucao){
   return true;
 }
 
+void Solucao::zerarVetorSolucao(){
+  vetorSolucao.assign(inst.nHoras * inst.nBombas, 0);
+}
+
 double custoPorM3(const Bomba &b, double tarifa){
   return calculaCustoEnergiaInstantaneo(b, tarifa) / b.getFluxo();
 }
