@@ -10,9 +10,8 @@ bool validaSolucao(const Instancia &inst, const Solucao &s){
     for(int i = 0; i < inst.nHoras; i++){
       nivelReservatorio -= r.getConsumo(i);
       for(int bombaAcoplada : r.getBombasAcopladas()){
-        if(s.getVetorSolucao().at(i + (bombaAcoplada * inst.nHoras))){
-          nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
-        }
+        nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo() * s.getVetorSolucao().at(i + (bombaAcoplada * inst.nHoras));
+        
       }
       if(nivelReservatorio < 0 || nivelReservatorio > r.getVolumeMax()){
         return false;
@@ -35,9 +34,7 @@ bool validaEImprimeSolucao(const Instancia &inst, const Solucao &s){
     for(int i = 0; i < inst.nHoras; i++){
       nivelReservatorio -= r.getConsumo(i);
       for(int bombaAcoplada : r.getBombasAcopladas()){
-        if(s.getVetorSolucao().at(i + (bombaAcoplada * inst.nHoras))){
-          nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo();
-        }
+        nivelReservatorio += inst.bombas.at(bombaAcoplada).getFluxo() * s.getVetorSolucao().at(i + (bombaAcoplada * inst.nHoras));
       }
       std::cout << std::setw(2) << i << "   | " << nivelReservatorio << "\n";
       if(nivelReservatorio < 0 || nivelReservatorio > r.getVolumeMax()){
