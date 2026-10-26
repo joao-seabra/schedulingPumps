@@ -7,11 +7,14 @@
 #include "instancia.h"
 
 #define PESO_ESPECIFICO_AGUA 9810 //N/M3
+#define QUANT_MIN 5 //quantidade mínima de minutos que uma bomba fica ligada
+
+typedef std::vector<unsigned short> TipoSolucao;
 
 class Solucao{
   private:
     Instancia &inst;
-    std::vector<bool> vetorSolucao;
+    TipoSolucao vetorSolucao;
     double fAvaliacao;
     double custoEnergia;
     int nInterrupcoes;
@@ -22,8 +25,9 @@ class Solucao{
 
     double calculaCusto(int &nInterrupcoes);
 
-    void calculaNivel(std::vector<bool> &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
+    void calculaNivel(TipoSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
     double calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia);
+    double calculaDeltaMovimento(int i, int multiplicador, int &novo_numInterrupcoes, double &novo_custoEnergia);
     double calculaEnergia(int &nInterrupcoes);
     double calculaLambda(int nInterrupcoes);
     double calculaPenalidade3();
@@ -32,7 +36,7 @@ class Solucao{
     inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2), penalidade3(_penalidade3){
       penalidade3 += calculaPenalidade3();
       nInterrupcoes = 0;
-      vetorSolucao.assign(inst.nHoras * inst.nBombas, false); //inicializa vetor solução 
+      vetorSolucao.assign(inst.nHoras * inst.nBombas, 0); //inicializa vetor solução 
       funcaoAvaliacao();
     }
 
@@ -41,7 +45,7 @@ class Solucao{
     
     // GETTERS
     const Instancia& getInst() const { return inst; }
-    const std::vector<bool>& getVetorSolucao() const { return vetorSolucao; }
+    const TipoSolucao& getVetorSolucao() const { return vetorSolucao; }
     double getFAvaliacao() const { return fAvaliacao; }
     double getCustoEnergia() const { return custoEnergia; }
     int getNInterrupcoes() const { return nInterrupcoes; }
@@ -62,12 +66,14 @@ class Solucao{
     reservatorio com aquela solucao hora a hora*/
 
     double calculaDeltaInversao(int i);
-    double calculaDeltaTroca(int i, int j);
+    double calculaDeltaMovimento(int i, int multiplicador);
 
     void movimentoInversao(int i);
-    void movimentoTroca(int i, int j);
+    void movimento(int i, int multiplicador);
+    void movimentoLigarBomba(int i);
+    void movimentoDesligarBomba(int i);
 
-    bool alteraVetorSolucao(std::vector<bool> novaSolucao);
+    bool alteraVetorSolucao(TipoSolucao novaSolucao);
 
     friend std::ostream& operator<<(std::ostream& os, const Solucao &s);
     Solucao& operator=(const Solucao& s2);

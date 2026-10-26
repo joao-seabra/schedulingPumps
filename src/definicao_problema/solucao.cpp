@@ -45,7 +45,8 @@ double Solucao::calculaCusto(){
 
 
 double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa){
-  double vazao = bomba.getFluxo() / 3600.0; // m3/h para m3/s
+  /*Custo de energia por minuto que uma bomba fica ligada*/
+  double vazao = bomba.getFluxo() / 60.0; // m3/min para m3/s
   double potenciaW = PESO_ESPECIFICO_AGUA * vazao * bomba.getAlturaDeTopo() / bomba.getEficiencia();
   double potenciakW = potenciaW / 1000.0;
   return potenciakW * tarifa;
@@ -73,7 +74,7 @@ void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada,
   calculaNivel(vetorSolucao, excedenteEncontrado, faltaEncontrada, variacaoDoNivelEncontrado);
 }
 
-void Solucao::calculaNivel(std::vector<bool> &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
+void Solucao::calculaNivel(TipoSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
   double excessoHora, faltaHora, variacaoDia;
   double totalExcedente = 0, totalFalta = 0, totalVariacao = 0;
   double nivel;
@@ -82,9 +83,7 @@ void Solucao::calculaNivel(std::vector<bool> &vetorS, double &excedenteEncontrad
     for(int i = 0; i < inst.nHoras; i++){
       nivel -= r.getConsumo(i);
       for(int bombaAcoplada : r.getBombasAcopladas()){
-        if(vetorS.at(i + (bombaAcoplada * inst.nHoras))){
-          nivel += inst.bombas.at(bombaAcoplada).getFluxo();
-        }
+        nivel += inst.bombas.at(bombaAcoplada).getFluxo() * vetorS.at(i + (bombaAcoplada * inst.nHoras));
       }
     
       faltaHora = r.getLimInferior() - nivel;
@@ -117,11 +116,74 @@ void Solucao::movimentoInversao(int i){
   vetorSolucao[i] = !vetorSolucao[i];
 }
 
-void Solucao::movimentoTroca(int i, int j){
-  if(i != j && vetorSolucao[i] != vetorSolucao[j]){
-    movimentoInversao(i);
-    movimentoInversao(j);
+void Solucao::movimento(int i, int multiplicador){
+  /*Movimento: O multiplicador será aplicado a um QUANT_MIN fixo e somado à posição i do vetor*/
+  int p = QUANT_MIN; //Definindo p para o movimento (Nesse caso 5 minutos)
+  p = p * multiplicador;
+  int result = vetorSolucao[i] + p;
+  /*
+  if(result < 0 || result > 60)
+    return false;
+  */
+  if(result < 0) result = 0;
+  else if(result > 60) result = 60;
+  
+  vetorSolucao[i] = result;
+  fAvaliacao += calculaDeltaMovimento(i, multiplicador, nInterrupcoes, custoEnergia);
+
+}
+
+void Solucao::movimentoLigarBomba(int i){
+  movimento(i, 60);
+}
+
+void Solucao::movimentoDesligarBomba(int i){
+  movimento(i, -60);
+}
+
+double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInterrupcoes, double &novo_custoEnergia){
+  int bomba = i / inst.nHoras;
+  int hora = i % inst.nHoras;
+  int result = multiplicador * QUANT_MIN;
+
+  result = (vetorSolucao.at(i) + result > 60) ?  ( 60 - vetorSolucao.at(i) ) : result;
+  result = (vetorSolucao.at(i) + result < 0) ?  ( 0 - vetorSolucao.at(i) ) : result;
+
+  double custoEnergiaInstantaneo = calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaPorHora.at(hora));
+
+  novo_custoEnergia = custoEnergia + (custoEnergiaInstantaneo * result);
+
+  novo_numInterrupcoes = nInterrupcoes;
+  if(hora > 0){
+    if((bool)(vetorSolucao.at(i) + result) != (bool) vetorSolucao.at(i - 1)){
+      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
+      novo_numInterrupcoes++;
+    }
+    else{
+      novo_numInterrupcoes--;
+    }
   }
+  if(hora + 1 < inst.nHoras){
+    if((bool)(vetorSolucao.at(i) + result) != (bool) vetorSolucao.at(i + 1)){
+      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
+      novo_numInterrupcoes++;
+    }
+    else{
+      novo_numInterrupcoes--;
+    }
+  }
+
+  //calculo das penalizações
+  double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
+  TipoSolucao temp = vetorSolucao;
+  temp.at(i) = temp.at(i) + result;
+  calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
+
+  double novaFA = novo_custoEnergia / calculaLambda(novo_numInterrupcoes) 
+      + deltaExcedente * penalidade1 + deltaFalta * penalidade2 + deltaNivel * penalidade3;
+
+  return novaFA - fAvaliacao;
+
 }
 
 double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia){
@@ -161,7 +223,7 @@ double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &n
 
   //calculo das penalizações
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
-  std::vector<bool> temp = vetorSolucao;
+  TipoSolucao temp = vetorSolucao;
   temp.at(i) = !temp.at(i);
   calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
 
@@ -177,19 +239,9 @@ double Solucao::calculaDeltaInversao(int i){
   return calculaDeltaInversao(i, temp1, temp2);
 }
 
-double Solucao::calculaDeltaTroca(int i, int j){
-  if(i != j && vetorSolucao.at(i) != vetorSolucao.at(j)){
-    Solucao temp(*this);
-    temp.movimentoInversao(i);
-    temp.movimentoInversao(j);
-
-    return temp.fAvaliacao - fAvaliacao;
-  }
-  return 0;
-}
 
 
-bool Solucao::alteraVetorSolucao(std::vector<bool> novaSolucao){
+bool Solucao::alteraVetorSolucao(TipoSolucao novaSolucao){
   if(novaSolucao.size() != vetorSolucao.size()){
     return false;
   }

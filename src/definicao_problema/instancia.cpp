@@ -44,14 +44,14 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
           std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
           exit(1);
         }
-        result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, refReservatorio));
+        result.bombas.push_back(Bomba(potencia, fluxo / 60, htopo, eficiencia, refReservatorio));
         result.nBombas++;
         break;
       }
       case 't':{
         arquivoTWLS >> tarifaPico >> tarifaNormal;
-        result.tarifaNormal = tarifaNormal;
-        result.tarifaPico = tarifaPico;
+        result.tarifaNormal = tarifaNormal / 60;
+        result.tarifaPico = tarifaPico / 60;
         break;
       }
       case 'n':{
@@ -71,6 +71,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
             std::cerr << "Erro ao ler tarifas" << std::endl;
             exit(1);
           }
+          tarifa = tarifa / 60;
           if(tarifa > tarifaMax) tarifaMax = tarifa;
           if(tarifa < tarifaMin) tarifaMin = tarifa;
           result.tarifaPorHora.push_back(tarifa);

@@ -9,7 +9,7 @@ class Reservatorio;
 class Bomba{
   private:
     double potencia; //KW
-    double fluxo; //Fluxo nominal (m3/h)
+    double fluxo; //Fluxo nominal (m3/min)
     double alturaDeTopo; //Head height (mca)
     double eficiencia;
     int reservatorioAcoplado;
