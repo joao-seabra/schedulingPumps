@@ -9,12 +9,14 @@
 #define PESO_ESPECIFICO_AGUA 9810 //N/M3
 #define QUANT_MIN 5 //quantidade mínima de minutos que uma bomba fica ligada
 
-typedef std::vector<unsigned short> TipoSolucao;
+typedef std::vector<unsigned short> TipoVetorSolucao;
+typedef unsigned short TipoSolucao;
+
 
 class Solucao{
   private:
     Instancia &inst;
-    TipoSolucao vetorSolucao;
+    TipoVetorSolucao vetorSolucao;
     double fAvaliacao;
     double custoEnergia;
     int nInterrupcoes;
@@ -25,7 +27,7 @@ class Solucao{
 
     double calculaCusto(int &nInterrupcoes);
 
-    void calculaNivel(TipoSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
+    void calculaNivel(TipoVetorSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
     double calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia);
     double calculaDeltaMovimento(int i, int multiplicador, int &novo_numInterrupcoes, double &novo_custoEnergia);
     double calculaEnergia(int &nInterrupcoes);
@@ -45,7 +47,7 @@ class Solucao{
     
     // GETTERS
     const Instancia& getInst() const { return inst; }
-    const TipoSolucao& getVetorSolucao() const { return vetorSolucao; }
+    const TipoVetorSolucao& getVetorSolucao() const { return vetorSolucao; }
     double getFAvaliacao() const { return fAvaliacao; }
     double getCustoEnergia() const { return custoEnergia; }
     int getNInterrupcoes() const { return nInterrupcoes; }
@@ -73,7 +75,7 @@ class Solucao{
     void movimentoLigarBomba(int i);
     void movimentoDesligarBomba(int i);
 
-    bool alteraVetorSolucao(TipoSolucao novaSolucao);
+    bool alteraVetorSolucao(TipoVetorSolucao novaSolucao);
     void zerarVetorSolucao();
 
     friend std::ostream& operator<<(std::ostream& os, const Solucao &s);

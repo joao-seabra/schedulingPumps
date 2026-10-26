@@ -56,7 +56,7 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
 double solucaoAleatoria(const Instancia &inst, Solucao &s){
   int tam = inst.nHoras * inst.nBombas;
   
-  TipoSolucao vetorAleatorio;
+  TipoVetorSolucao vetorAleatorio;
   
   vetorAleatorio.assign(tam, 0); 
 

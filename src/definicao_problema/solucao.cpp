@@ -74,7 +74,7 @@ void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada,
   calculaNivel(vetorSolucao, excedenteEncontrado, faltaEncontrada, variacaoDoNivelEncontrado);
 }
 
-void Solucao::calculaNivel(TipoSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
+void Solucao::calculaNivel(TipoVetorSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
   double excessoHora, faltaHora, variacaoDia;
   double totalExcedente = 0, totalFalta = 0, totalVariacao = 0;
   double nivel;
@@ -175,7 +175,7 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInt
 
   //calculo das penalizações
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
-  TipoSolucao temp = vetorSolucao;
+  TipoVetorSolucao temp = vetorSolucao;
   temp.at(i) = temp.at(i) + result;
   calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
 
@@ -223,7 +223,7 @@ double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &n
 
   //calculo das penalizações
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
-  TipoSolucao temp = vetorSolucao;
+  TipoVetorSolucao temp = vetorSolucao;
   temp.at(i) = !temp.at(i);
   calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
 
@@ -241,7 +241,7 @@ double Solucao::calculaDeltaInversao(int i){
 
 
 
-bool Solucao::alteraVetorSolucao(TipoSolucao novaSolucao){
+bool Solucao::alteraVetorSolucao(TipoVetorSolucao novaSolucao){
   if(novaSolucao.size() != vetorSolucao.size()){
     return false;
   }
@@ -292,15 +292,15 @@ std::ostream& operator<<(std::ostream& os, const Solucao &s){
   os << std::left;
   for(int i = 0; i < s.inst.nBombas; i++){
     for(int j = 0; j < s.inst.nHoras; j++){
-      os << std::setw(2) << j << " ";
+      os << std::setw(3) << j << " ";
     }
 
   }
   os << std::endl;
 
   os << std::left;
-  for(bool b : s.vetorSolucao){
-    os << std::setw(2) << b << " ";
+  for(TipoSolucao b : s.vetorSolucao){
+    os << std::setw(3) << b << " ";
   }
 
   os << std::endl << "\nFunção objetivo: " << s.fAvaliacao << "\nNúmero de interrupções: " << s.nInterrupcoes;
