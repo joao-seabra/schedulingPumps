@@ -43,7 +43,7 @@ double realAleatorio(double minimo, double maximo);
 
 // Embaralha os elementos do vetor em uma ordem aleatória (equivalente a
 // sortear uma permutação uniformemente ao acaso).
-void embaralhaVetor(std::vector<int> &vetor);
-void embaralhaVetor(std::vector<bool> &vetor);
+template <typename T>
+void embaralhaVetor(std::vector<T> &vetor);
 
 #endif // ALEATORIO_H

@@ -35,17 +35,12 @@ double realAleatorio(double minimo, double maximo)
     return distribuicao(gerador);
 }
 
-void embaralhaVetor(std::vector<bool> &vetor)
+template <typename T>
+void embaralhaVetor(std::vector<T> &vetor)
 {
     // std::shuffle já implementa o embaralhamento (algoritmo de
     // Fisher-Yates) de forma correta e eficiente -- não reimplemente isso
     // na mão com trocas aleatórias.
     std::shuffle(vetor.begin(), vetor.end(), gerador);
 }
-void embaralhaVetor(std::vector<int> &vetor)
-{
-    // std::shuffle já implementa o embaralhamento (algoritmo de
-    // Fisher-Yates) de forma correta e eficiente -- não reimplemente isso
-    // na mão com trocas aleatórias.
-    std::shuffle(vetor.begin(), vetor.end(), gerador);
-}
+

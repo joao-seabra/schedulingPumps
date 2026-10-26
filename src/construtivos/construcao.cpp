@@ -51,14 +51,13 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
 double solucaoAleatoria(const Instancia &inst, Solucao &s){
   int tam = inst.nHoras * inst.nBombas;
   
-  std::vector<bool> vetorAleatorio;
+  TipoSolucao vetorAleatorio;
   
-  //mudo o vetor inteiro pra false, acho que não precisa, é tudo aleatório mesmo ne
-  vetorAleatorio.assign(tam, false); 
+  vetorAleatorio.assign(tam, 0); 
 
   int n = inteiroAleatorio(1, tam - 1);
   for(int i = 0; i < n; i++){
-    vetorAleatorio[i] = !vetorAleatorio[i];
+    vetorAleatorio[i] = inteiroAleatorio(0, 60);
   }
   embaralhaVetor(vetorAleatorio);
 
