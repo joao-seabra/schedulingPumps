@@ -23,6 +23,9 @@ double Solucao::calculaEnergia(int &nInterrupcoes){
           nInterrupcoes++;
         }
       }
+      if(vetorSolucao.at((i + (j * inst.nHoras))) > 0 && vetorSolucao.at((i + (j * inst.nHoras))) < 60){
+        nInterrupcoes++;
+      }
     }
   }
 
@@ -126,8 +129,8 @@ void Solucao::movimento(int i, int multiplicador){
   if(result < 0) result = 0;
   else if(result > 60) result = 60;
   
-  vetorSolucao[i] = result;
   fAvaliacao += calculaDeltaMovimento(i, multiplicador, nInterrupcoes, custoEnergia);
+  vetorSolucao[i] = result;
 
 }
 
@@ -158,24 +161,11 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInt
   novo_custoEnergia = custoEnergia + (custoEnergiaInstantaneo * result);
 
   novo_numInterrupcoes = nInterrupcoes;
-  if(hora > 0){
-    if((bool)(vetorSolucao.at(i) + result) != (bool) vetorSolucao.at(i - 1)){
-      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-      novo_numInterrupcoes++;
-    }
-    else{
-      novo_numInterrupcoes--;
-    }
-  }
-  if(hora + 1 < inst.nHoras){
-    if((bool)(vetorSolucao.at(i) + result) != (bool) vetorSolucao.at(i + 1)){
-      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-      novo_numInterrupcoes++;
-    }
-    else{
-      novo_numInterrupcoes--;
-    }
-  }
+  int valorAntigo = vetorSolucao.at(i);
+  int valorNovo = vetorSolucao.at(i) + result;
+
+  //calculo do número de interrupções:
+  
 
   //calculo das penalizações
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
@@ -258,6 +248,7 @@ bool Solucao::alteraVetorSolucao(TipoVetorSolucao novaSolucao){
 
 void Solucao::zerarVetorSolucao(){
   vetorSolucao.assign(inst.nHoras * inst.nBombas, 0);
+  funcaoAvaliacao();
 }
 
 double custoPorM3(const Bomba &b, double tarifa){

@@ -60,7 +60,7 @@ double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI, int &me
 
   int multiplicador = 1;
   for(int i = 0; i < n && !melhorou; i++){
-    for(int j = 0; j < 2; j++){
+    for(int j = 0; j < 2 && !melhorou; j++){
       multiplicador *= -1;
       delta = s.calculaDeltaMovimento(ordem[i], multiplicador);
       if(delta < -1e-9){

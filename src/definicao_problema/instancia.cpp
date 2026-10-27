@@ -136,7 +136,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
     for(int i = 0; i < result.nHoras; i++){
       int horaDoDia = i % 24;
       if(horaDoDia >= 18 && horaDoDia < 21) 
-        result.tarifaPorHora.at(i) = tarifaPico;
+        result.tarifaPorHora.at(i) = result.tarifaPico;
 
     }
   }

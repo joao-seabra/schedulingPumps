@@ -1,5 +1,8 @@
 #include "util.h"
 
+#include <iostream>
+#include <iomanip>
+
 #include "../definicao_problema/solucao.h"
 #include "../definicao_problema/instancia.h"
 
@@ -43,7 +46,7 @@ bool validaEImprimeSolucao(const Instancia &inst, const Solucao &s){
       }
     }
     std::cout << std::endl;
-    if(horaInvalida > 0){
+    if(horaInvalida >= 0){
       std::cout << "\nUltima Hora inválida: " << horaInvalida;
       horaInvalida = -1;
     }
