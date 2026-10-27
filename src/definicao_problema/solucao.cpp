@@ -23,9 +23,7 @@ double Solucao::calculaEnergia(int &nInterrupcoes){
           nInterrupcoes++;
         }
       }
-      if(vetorSolucao.at((i + (j * inst.nHoras))) > 0 && vetorSolucao.at((i + (j * inst.nHoras))) < 60){
-        nInterrupcoes++;
-      }
+      
     }
   }
 
@@ -165,7 +163,7 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInt
 
   //calculo do número de interrupções:
   //as interrupções só mudam se a bomba passa de desligada para ligada (ou o contrário) nessa hora
-  if((bool) vetorSolucao.at(i) != (bool)(vetorSolucao.at(i) + result)){
+   if((bool) vetorSolucao.at(i) != (bool)(vetorSolucao.at(i) + result)){
     if(hora > 0){
       if((bool)(vetorSolucao.at(i) + result) != (bool) vetorSolucao.at(i - 1)){
         //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
@@ -184,6 +182,7 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInt
       }
     }
   }
+
 
   //calculo das penalizações
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
