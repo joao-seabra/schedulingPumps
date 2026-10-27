@@ -3,6 +3,8 @@
 
 
 #include <vector>
+#include <algorithm>  // std::shuffle
+#include <random>
 
 /*
  * ============================================================================
@@ -24,6 +26,7 @@
  * ============================================================================
  */
 
+static std::mt19937 gerador(std::random_device{}());
 // Define a semente do gerador de números aleatórios. Usar sempre a mesma
 // semente faz o programa gerar exatamente a mesma sequência de números
 // aleatórios em execuções diferentes -- muito útil para comparar métodos
@@ -44,6 +47,8 @@ double realAleatorio(double minimo, double maximo);
 // Embaralha os elementos do vetor em uma ordem aleatória (equivalente a
 // sortear uma permutação uniformemente ao acaso).
 template <typename T>
-void embaralhaVetor(std::vector<T> &vetor);
+void embaralhaVetor(std::vector<T> &vetor){
+  std::shuffle(vetor.begin(), vetor.end(), gerador);
+}
 
 #endif // ALEATORIO_H

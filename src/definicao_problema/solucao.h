@@ -7,7 +7,7 @@
 #include "instancia.h"
 
 #define PESO_ESPECIFICO_AGUA 9810 //N/M3
-#define QUANT_MIN 5 //quantidade mínima de minutos que uma bomba fica ligada
+#define QUANT_MIN 60 //quantidade mínima de minutos que uma bomba fica ligada
 
 typedef std::vector<unsigned short> TipoVetorSolucao;
 typedef unsigned short TipoSolucao;

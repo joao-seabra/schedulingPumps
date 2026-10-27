@@ -10,10 +10,6 @@
 
 double multistart(Instancia &inst, Solucao &s, int iterMax){
   Solucao sEstrela(s);
-  /*
-  if(s.getVetorSolucao().empty() || !validaSolucao(inst, s)){
-    solucaoBangBang(inst, s);
-  } */
 
   if(s.getVetorSolucao().empty()){
     solucaoBangBang(inst, s);

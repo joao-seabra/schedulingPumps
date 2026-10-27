@@ -139,6 +139,12 @@ void Solucao::movimentoDesligarBomba(int i){
   movimento(i, -60);
 }
 
+double Solucao::calculaDeltaMovimento(int i, int multiplicador){
+  int temp1 = 0;
+  double temp2 = 0;
+  return calculaDeltaMovimento(i, multiplicador, temp1, temp2);
+}
+
 double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInterrupcoes, double &novo_custoEnergia){
   int bomba = i / inst.nHoras;
   int hora = i % inst.nHoras;
@@ -289,17 +295,18 @@ std::ostream& operator<<(std::ostream& os, const Solucao &s){
 
   os << std::left;
   for(int i = 0; i < s.inst.nBombas; i++){
+    os << "Bomba b" << i << ":\n";
     for(int j = 0; j < s.inst.nHoras; j++){
-      os << std::setw(3) << j << " ";
+      os << std::setw(2) << j << " ";
     }
-
+    os << std::endl;
+    os << std::left;
+    for(int j = 0; j < s.inst.nHoras; j++){
+      os << std::setw(2) << s.vetorSolucao.at((j + (i * s.inst.nHoras))) << " ";
+    }
+    os << std::endl << std::endl;
   }
-  os << std::endl;
 
-  os << std::left;
-  for(TipoSolucao b : s.vetorSolucao){
-    os << std::setw(3) << b << " ";
-  }
 
   os << std::endl << "\nFunção objetivo: " << s.fAvaliacao << "\nNúmero de interrupções: " << s.nInterrupcoes;
 

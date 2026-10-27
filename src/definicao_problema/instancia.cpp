@@ -160,7 +160,7 @@ std::ostream& operator<<(std::ostream& os, Instancia &inst){
   }
   os << "Horas que serao planejadas: " << inst.nHoras << std::endl;
   os << std::fixed << std::setprecision(3)
-      << "Tarifa de pico: R$" << inst.tarifaPico << " Tarifa Normal: R$" << inst.tarifaNormal;
+      << "Tarifa de pico: R$" << inst.tarifaPico * 60 << " Tarifa Normal: R$" << inst.tarifaNormal * 60;
 
 
   return os;

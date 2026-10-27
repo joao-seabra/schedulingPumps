@@ -36,7 +36,7 @@ class Bomba{
     friend std::ostream& operator<<(std::ostream& os, const Bomba &b){
       os << std::fixed << std::setprecision(2);
       os << "Potência: " << b.potencia << "kW\n";
-      os << "Fluxo: " << b.fluxo << "m3/h\n";
+      os << "Fluxo: " << b.fluxo * 60 << "m3/h\n";
       os << "Altura de topo: " << b.alturaDeTopo << "mca\n";
       os << "Eficiência: " << b.eficiencia << "\n";
 

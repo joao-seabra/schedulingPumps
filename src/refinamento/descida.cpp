@@ -8,26 +8,22 @@
 
 #include <numeric>
 
-double vizinhoRandomico(Instancia &inst, Solucao &s, int &melhorI);
-double vizinhoRandomico(Instancia &inst, Solucao &s, int &melhorI, int &melhorJ);
+double vizinhoRandomico(Instancia &inst, Solucao &s, int &melhorI, int &melhorMultiplicador);
 
-double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI);
+double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI, int &melhorMultiplicador);
 
 double randomDescent(Instancia &inst, Solucao &s, unsigned int itermax){
   double foVizinho;
   unsigned int iter = 0;
 
-  int melhorI;
-  // int melhorJ;
+  int melhorI, melhorMultiplicador;
 
   while(iter < itermax){
     iter++;
-    foVizinho = vizinhoRandomico(inst, s, melhorI);
-    // foVizinho = vizinhoRandomico(inst, s, melhorI, melhorJ);
+    foVizinho = vizinhoRandomico(inst, s, melhorI, melhorMultiplicador);
     if(foVizinho < s.getFAvaliacao()){
       iter = 0;
-      s.movimentoInversao(melhorI);
-      // s.movimentoTroca(melhorI, melhorJ);
+      s.movimento(melhorI, melhorMultiplicador);
     }
   }
   
@@ -35,37 +31,23 @@ double randomDescent(Instancia &inst, Solucao &s, unsigned int itermax){
   return s.funcaoAvaliacao();
 }
 
-double vizinhoRandomico(Instancia &inst, Solucao &s, int &melhorI){
+double vizinhoRandomico(Instancia &inst, Solucao &s, int &melhorI, int &melhorMultiplicador){
 
   int i = inteiroAleatorio(0, s.getVetorSolucao().size() - 1);
+  int multiplicador = inteiroAleatorio(0, 1);
+  multiplicador = !multiplicador ? -1 : multiplicador;
 
-  double delta = s.calculaDeltaInversao(i);
+  double delta = s.calculaDeltaMovimento(i, multiplicador);
   
   melhorI = i;
+  melhorMultiplicador = multiplicador;
 
   return s.getFAvaliacao() + delta;
 
 }
 
-double vizinhoRandomico(Instancia &inst, Solucao &s, int &melhorI, int &melhorJ){
-  int n = s.getVetorSolucao().size();
 
-  int i, j;
-  i = inteiroAleatorio(0, n-1);
-  do{
-    j = inteiroAleatorio(0, n-1);
-  }while(j==i);
-
-  double delta = s.calculaDeltaTroca(i, j);
-
-  melhorI = i;
-  melhorJ = j;
-
-  return s.getFAvaliacao() + delta;
-
-}
-
-double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI){
+double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI, int &melhorMultiplicador){
   int n = s.getVetorSolucao().size();
 
   double fo = s.getFAvaliacao();
@@ -76,11 +58,16 @@ double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI){
   std::iota(ordem.begin(), ordem.end(), 0);
   embaralhaVetor(ordem);
 
+  int multiplicador = 1;
   for(int i = 0; i < n && !melhorou; i++){
-    delta = s.calculaDeltaInversao(ordem[i]);
-    if(delta < -1e-9){
-      melhorou = true;
-      melhorI = ordem[i];
+    for(int j = 0; j < 2; j++){
+      multiplicador *= -1;
+      delta = s.calculaDeltaMovimento(ordem[i], multiplicador);
+      if(delta < -1e-9){
+        melhorou = true;
+        melhorI = ordem[i];
+        melhorMultiplicador = multiplicador;
+      }
     }
   }
 
@@ -91,15 +78,15 @@ double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI){
 double firstImprovement(Instancia &inst, Solucao &s){
 
   double foVizinho;
-  int melhorI;
+  int melhorI, melhorMultiplicador;
   bool melhorou = false;
 
   do{
     melhorou = false;
 
-    foVizinho = vizinhoPrimeiraMelhora(inst, s, melhorI);
+    foVizinho = vizinhoPrimeiraMelhora(inst, s, melhorI, melhorMultiplicador);
     if(foVizinho < s.getFAvaliacao()){
-      s.movimentoInversao(melhorI);
+      s.movimento(melhorI, melhorMultiplicador);
       melhorou = true;
     }
 
