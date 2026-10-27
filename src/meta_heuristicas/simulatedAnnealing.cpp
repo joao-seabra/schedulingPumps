@@ -12,8 +12,8 @@ double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i, int &multi
 
 double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i, int &multiplicador){
   i = inteiroAleatorio(0, s.getVetorSolucao().size() - 1);
-  multiplicador = inteiroAleatorio(0, 1);
-  multiplicador = !multiplicador ? -1 : 1;
+  int sinalMultiplicador = inteiroAleatorio(0, 1);
+  multiplicador = !sinalMultiplicador ? -1 : 1;
 
   double foVizinho = s.calculaDeltaMovimento(i, multiplicador) + s.getFAvaliacao();
 
