@@ -6,7 +6,54 @@
 #include "../utilitarios/cronometro.h"
 #include <cmath>
 
-  double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);
+#define INTERRUPCOES_LACUNA 2 //Quantas interrupções devem ser consideradas quando se tem uma lacuna no vetor Solucao
+
+double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);
+
+bool horaComLacuna(const TipoVetorSolucao &v, int i, int nHoras);
+int interrupcoesAfetadas(const TipoVetorSolucao &v, int i, int nHoras);
+
+bool horaComLacuna(const TipoVetorSolucao &v, int i, int nHoras){
+  /*Confere a existência de uma lacuna*/
+  // Hora parcial (0 < minutos < 60) com as duas horas vizinhas ligadas. Os minutos só encostam
+  // em uma das vizinhas, então sobra uma lacuna.
+  int hora = i % nHoras;
+  if(hora == 0 || hora + 1 >= nHoras) 
+    return false;
+  if(v.at(i) == 0 || v.at(i) >= 60) 
+    return false;
+  if(v.at(i - 1) == 0 || v.at(i + 1) == 0) 
+    return false;
+
+  return true;
+}
+
+int interrupcoesAfetadas(const TipoVetorSolucao &v, int i, int nHoras){
+  /*Calcula as interrupções que dependem da posição i*/
+  int hora = i % nHoras;
+  int total = 0;
+  if(hora > 0){ //confere o horário anterior
+    if((bool) v.at(i) != (bool) v.at(i - 1)){ //se x estiver ligada e y desligada
+      total++;
+    }
+    if(horaComLacuna(v, i - 1, nHoras)){ //se i-1 tiver uma lacuna
+      total += INTERRUPCOES_LACUNA; //somar 2 interrupções
+    }
+  }
+  if(hora + 1 < nHoras){ //confere o próximo horário
+    if((bool) v.at(i) != (bool) v.at(i + 1)){ //se x estiver ligada e y desligada
+      total++;
+    }
+    if(horaComLacuna(v, i + 1, nHoras)){ //se i+1 tiver uma lacuna
+      total += INTERRUPCOES_LACUNA; //somar 2 interrupções
+    }
+  }
+  if(horaComLacuna(v, i, nHoras)){ //se o próprio i for uma lacuna
+    total += INTERRUPCOES_LACUNA; //somar 2 interrupções
+  }
+
+  return total;
+}
 
 double Solucao::calculaEnergia(int &nInterrupcoes){
   double custoEnergia = 0, tarifa = 0;;
@@ -23,7 +70,10 @@ double Solucao::calculaEnergia(int &nInterrupcoes){
           nInterrupcoes++;
         }
       }
-      
+      if(horaComLacuna(vetorSolucao, i + (j * inst.nHoras), inst.nHoras)){
+        nInterrupcoes += INTERRUPCOES_LACUNA;
+      }
+
     }
   }
 
@@ -150,44 +200,25 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInt
   int bomba = i / inst.nHoras;
   int hora = i % inst.nHoras;
   int result = multiplicador * QUANT_MIN;
-
   result = (vetorSolucao.at(i) + result > 60) ?  ( 60 - vetorSolucao.at(i) ) : result;
   result = (vetorSolucao.at(i) + result < 0) ?  ( 0 - vetorSolucao.at(i) ) : result;
+  
+  TipoVetorSolucao temp; //Usado para calcular as penalizações por nível e o número de interrupções  
+  temp = vetorSolucao;
+  temp.at(i) = temp.at(i) + result;
 
   double custoEnergiaInstantaneo = calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaPorHora.at(hora));
-
   novo_custoEnergia = custoEnergia + (custoEnergiaInstantaneo * result);
-
-  novo_numInterrupcoes = nInterrupcoes;
-
-
+  
+  
   //calculo do número de interrupções:
-  //as interrupções só mudam se a bomba passa de desligada para ligada (ou o contrário) nessa hora
-   if((bool) vetorSolucao.at(i) != (bool)(vetorSolucao.at(i) + result)){
-    if(hora > 0){
-      if((bool)(vetorSolucao.at(i) + result) != (bool) vetorSolucao.at(i - 1)){
-        //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-        novo_numInterrupcoes++;
-      }
-      else{
-        novo_numInterrupcoes--;
-      }
-    }
-    if(hora + 1 < inst.nHoras){
-      if((bool)(vetorSolucao.at(i) + result) != (bool) vetorSolucao.at(i + 1)){
-        novo_numInterrupcoes++;
-      }
-      else{
-        novo_numInterrupcoes--;
-      }
-    }
-  }
+  int interrupcoesAntes = interrupcoesAfetadas(vetorSolucao, i, inst.nHoras); //interrupções ao redor de i no vetor original
+  int interrupcoesDepois = interrupcoesAfetadas(temp, i, inst.nHoras); //interrupções ao redor de i no novo vetor
+  novo_numInterrupcoes = nInterrupcoes - interrupcoesAntes + interrupcoesDepois;
 
 
   //calculo das penalizações
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
-  TipoVetorSolucao temp = vetorSolucao;
-  temp.at(i) = temp.at(i) + result;
   calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
 
   double novaFA = novo_custoEnergia / calculaLambda(novo_numInterrupcoes) 
