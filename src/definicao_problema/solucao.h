@@ -80,10 +80,8 @@ class Solucao{
     /*Calcula qual foi o excesso e qual foi a falta do 
     reservatorio com aquela solucao hora a hora*/
 
-    double calculaDeltaInversao(int i);
     double calculaDeltaMovimento(int i, int multiplicador);
 
-    void movimentoInversao(int i);
     void movimento(int i, int multiplicador);
     void movimentoLigarBomba(int i);
     void movimentoDesligarBomba(int i);

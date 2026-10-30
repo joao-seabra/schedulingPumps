@@ -162,10 +162,6 @@ void Solucao::calculaNivel(TipoVetorSolucao &vetorS, double &excedenteEncontrado
   faltaEncontrada = totalFalta;
 }
 
-void Solucao::movimentoInversao(int i){
-  fAvaliacao += calculaDeltaInversao(i, nInterrupcoes, custoEnergia);
-  vetorSolucao[i] = !vetorSolucao[i];
-}
 
 void Solucao::movimento(int i, int multiplicador){
   /*Movimento: O multiplicador será aplicado a um QUANT_MIN fixo e somado à posição i do vetor*/
@@ -228,59 +224,6 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInt
 
   return novaFA - fAvaliacao;
 
-}
-
-double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia){
-  int bomba = i / inst.nHoras;
-  int hora = i % inst.nHoras;
-  
-  double custoEnergiaInstantaneo = calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaPorHora.at(hora));
-
-  if(!vetorSolucao.at(i)){
-    novo_custoEnergia = custoEnergia + custoEnergiaInstantaneo;
-  }
-  else{
-    novo_custoEnergia = custoEnergia - custoEnergiaInstantaneo;
-  }
-  
-
-  novo_numInterrupcoes = nInterrupcoes;
-  if(hora > 0){
-    if(!vetorSolucao.at(i) != vetorSolucao.at(i - 1)){
-      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-      novo_numInterrupcoes++;
-    }
-    else{
-      novo_numInterrupcoes--;
-    }
-  }
-  if(hora + 1 < inst.nHoras){
-    if(!vetorSolucao.at(i) != vetorSolucao.at(i + 1)){
-      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-      novo_numInterrupcoes++;
-    }
-    else{
-      novo_numInterrupcoes--;
-    }
-  }
-
-
-  //calculo das penalizações
-  double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
-  TipoVetorSolucao temp = vetorSolucao;
-  temp.at(i) = !temp.at(i);
-  calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
-
-  double novaFA = novo_custoEnergia / calculaLambda(novo_numInterrupcoes) 
-      + deltaExcedente * penalidade1 + deltaFalta * penalidade2 + deltaNivel * penalidade3;
-
-  return novaFA - fAvaliacao;
-}
-
-double Solucao::calculaDeltaInversao(int i){
-  int temp1 = 0;
-  double temp2 = 0;
-  return calculaDeltaInversao(i, temp1, temp2);
 }
 
 
