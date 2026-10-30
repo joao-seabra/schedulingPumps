@@ -128,7 +128,7 @@ int main(int argc, char const *argv[]){
           std::cout << "\nSimulated Annealing:\n";
           cron = new Cronometro();
 
-          int saMAX = 348;
+          int saMAX = 900;
           double tempInicial = temperaturaInicial(inst, s, 1.11, 0.927, saMAX);
           std::cout << std::fixed << std::setprecision(2) 
                     << "\nTemperatura Inicial: " << tempInicial << std::endl;
@@ -185,6 +185,6 @@ void imprimeSolucao(const Instancia &inst, Solucao &s){
   std::cout << "\nPenalidade por variação de volume:" << s.getPenalidade3() << std::endl;
 
   if (validaSolucao(inst, s)) std::cout << "\nSolução válida\n";
-  else std::cout << "\nSoulução Inválida\n";
+  else std::cout << "\nSolução Inválida\n";
 
 }
