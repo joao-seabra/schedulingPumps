@@ -167,7 +167,7 @@ void Solucao::movimentoInversao(int i){
 
 void Solucao::movimento(int i, int multiplicador){
   /*Movimento: O multiplicador será aplicado a um QUANT_MIN fixo e somado à posição i do vetor*/
-  int p = QUANT_MIN; //Definindo p para o movimento (Nesse caso 5 minutos)
+  int p = Solucao::getQUANT_MIN(); //Definindo p para o movimento (Nesse caso 5 minutos)
   p = p * multiplicador;
   int result = vetorSolucao[i] + p;
   /*
@@ -199,7 +199,7 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador){
 double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInterrupcoes, double &novo_custoEnergia){
   int bomba = i / inst.nHoras;
   int hora = i % inst.nHoras;
-  int result = multiplicador * QUANT_MIN;
+  int result = multiplicador * Solucao::getQUANT_MIN();
   result = (vetorSolucao.at(i) + result > 60) ?  ( 60 - vetorSolucao.at(i) ) : result;
   result = (vetorSolucao.at(i) + result < 0) ?  ( 0 - vetorSolucao.at(i) ) : result;
   

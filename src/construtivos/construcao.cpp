@@ -14,7 +14,7 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
   for(const Reservatorio &r : inst.reservatorios){
     fluxoTotal = 0;
     for(int b : r.getBombasAcopladas()){
-      fluxoTotal += inst.bombas.at(b).getFluxo() * QUANT_MIN; //fluxo total em M3/min
+      fluxoTotal += inst.bombas.at(b).getFluxo() * Solucao::getQUANT_MIN(); //fluxo total em M3/min
     }  
 
     nivelReservatorio = r.getVolumeInicial();
@@ -22,7 +22,7 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
     for(int i = 0; i < inst.nHoras; i++){
       base = nivelReservatorio - r.getConsumo(i);
 
-      for(int k = 1; k <= (60 / QUANT_MIN); k++){
+      for(int k = 1; k <= (60 / Solucao::getQUANT_MIN()); k++){
         if(ativas && base + (fluxoTotal * k) > r.getVolumeMax()){
           ativas = false;
         }
@@ -62,7 +62,7 @@ double solucaoAleatoria(const Instancia &inst, Solucao &s){
 
   int n = inteiroAleatorio(1, tam - 1);
   for(int i = 0; i < n; i++){
-    vetorAleatorio[i] = inteiroAleatorio(0, 60);
+    vetorAleatorio[i] = inteiroAleatorio(0, 60 / Solucao::getQUANT_MIN()) * Solucao::getQUANT_MIN();
   }
   embaralhaVetor(vetorAleatorio);
 
