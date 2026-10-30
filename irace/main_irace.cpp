@@ -32,6 +32,7 @@ int main (int argc, char* argv[]) {
   int penalidade1 = 1;
   int penalidade2 = 1;
   double penalidade3 = -1;
+  int quant_min = 10;
 
       // Configuração do CLI11
     app.add_option("-i,--instancia", nomeInstancia, "Nome da instância (ex: T1R2B)")->required();
@@ -47,6 +48,7 @@ int main (int argc, char* argv[]) {
     app.add_option("--penalidade1", penalidade1, "penalidade de excesso");
     app.add_option("--penalidade2", penalidade2, "penalidade de falta");
     app.add_option("--penalidade3", penalidade3, "penalidade de variação do nível");
+    app.add_option("--quant_min", quant_min, "quantidade mínima em minutos que uma bomba fica ligada");
 
     // Realiza o parse dos argumentos
     CLI11_PARSE(app, argc, argv);
@@ -56,7 +58,7 @@ int main (int argc, char* argv[]) {
     const std::string nomeArquivoConsumo = "Instancia/" + nomeInstancia + "CONSUMO.txt";
 
     Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
-    Solucao s(inst, penalidade1, penalidade2, penalidade3);
+    Solucao s(inst, penalidade1, penalidade2, penalidade3, quant_min);
     
 
     // Inicializa a semente
