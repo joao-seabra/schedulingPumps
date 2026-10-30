@@ -129,11 +129,11 @@ int main(int argc, char const *argv[]){
           std::cout << "\nSimulated Annealing:\n";
           cron = new Cronometro();
 
-          int saMAX = 900;
-          double tempInicial = temperaturaInicial(inst, s, 1.11, 0.927, saMAX);
+          int saMAX = 800;
+          double tempInicial = temperaturaInicial(inst, s, 1.8, 0.75, saMAX);
           std::cout << std::fixed << std::setprecision(2) 
                     << "\nTemperatura Inicial: " << tempInicial << std::endl;
-          simulatedAnnealing(inst, s, 0.974, saMAX, tempInicial, 0.054);
+          simulatedAnnealing(inst, s, 0.997, saMAX, tempInicial, 0.002);
 
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
