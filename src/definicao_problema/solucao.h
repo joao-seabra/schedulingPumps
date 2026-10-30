@@ -21,9 +21,9 @@ class Solucao{
     int nInterrupcoes;
 
     static int quant_min;
-    static double penalidade1;
-    static double penalidade2;
-    static double penalidade3;
+    double penalidade1;
+    double penalidade2;
+    double penalidade3;
 
 
     double calculaCusto(int &nInterrupcoes);
@@ -36,20 +36,13 @@ class Solucao{
 
 
     static void setQUANT_MIN(int n) {quant_min = n;}
-    static void setPenalidade1(double n) {penalidade1 = n;}
-    static void setPenalidade2(double n) {penalidade2 = n;}
-    static void setPenalidade3(double n) {penalidade3 = n;}
     double calculaPenalidade3();
   public:
     Solucao(Instancia &_inst, double _penalidade1 = 1000.0, double _penalidade2 = 1000.0, double _penalidade3 = -1, int _quant_min = 60):
-    inst(_inst){
-      setPenalidade1(_penalidade1);
-      setPenalidade2(_penalidade2);
-
+    inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2){
       if(_penalidade3 < -1e3)
-        setPenalidade3(calculaPenalidade3());
-      else 
-        setPenalidade3(_penalidade3);
+        _penalidade3 = calculaPenalidade3();
+      penalidade3 = _penalidade3;
 
       if(_quant_min > 60 || _quant_min < 0){
         _quant_min = 60;
@@ -70,9 +63,9 @@ class Solucao{
     double getFAvaliacao() const { return fAvaliacao; }
     double getCustoEnergia() const { return custoEnergia; }
     int getNInterrupcoes() const { return nInterrupcoes; }
-    static double getPenalidade1() { return penalidade1; }
-    static double getPenalidade2() { return penalidade2; }
-    static double getPenalidade3() { return penalidade3; }
+    double getPenalidade1() const { return penalidade1; }
+    double getPenalidade2() const { return penalidade2; }
+    double getPenalidade3() const { return penalidade3; }
     static double getQUANT_MIN() { return quant_min; }
 
     /*

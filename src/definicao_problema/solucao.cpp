@@ -6,6 +6,8 @@
 #include "../utilitarios/cronometro.h"
 #include <cmath>
 
+int Solucao::quant_min = 60;
+
 #define INTERRUPCOES_LACUNA 2 //Quantas interrupções devem ser consideradas quando se tem uma lacuna no vetor Solucao
 
 double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);

@@ -25,8 +25,9 @@ int main(int argc, char const *argv[]){
 
   const double penalidade1 = 139;
   const double penalidade2 = 177;
-  // const double penalidade3 = 0.02;
   const double penalidade3 = -1;
+
+  const int quant_min = 10;
   
   std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
   std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
@@ -37,7 +38,7 @@ int main(int argc, char const *argv[]){
   }
 
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
-  Solucao s(inst, penalidade1, penalidade2, penalidade3);
+  Solucao s(inst, penalidade1, penalidade2, penalidade3, quant_min);
 
   std::cout << "\nInstância:\n" << inst << std::endl;
   std::cout << "\nSolução:\n";
@@ -178,11 +179,11 @@ void imprimeSolucao(const Instancia &inst, Solucao &s){
   std::cout << s << std::endl;
   std::cout << "\nCusto de energia elétrica de s:" << s.getCustoEnergia() << std::endl;
   std::cout << "\nExcedente de s:" << excedente << std::endl;
-  std::cout << "\nPenalidade por excedente de s:" << Solucao::getPenalidade1() << std::endl;
+  std::cout << "\nPenalidade por excedente de s:" << s.getPenalidade1() << std::endl;
   std::cout << "\nFalta de s:" << falta << std::endl;
-  std::cout << "\nPenalidade por falta de s:" << Solucao::getPenalidade2() << std::endl;
+  std::cout << "\nPenalidade por falta de s:" << s.getPenalidade2() << std::endl;
   std::cout << "\nVariacao em relação ao volume inicial:" << variacaoNivel << std::endl;
-  std::cout << "\nPenalidade por variação de volume:" << Solucao::getPenalidade3() << std::endl;
+  std::cout << "\nPenalidade por variação de volume:" << s.getPenalidade3() << std::endl;
 
   if (validaSolucao(inst, s)) std::cout << "\nSolução válida\n";
   else std::cout << "\nSolução Inválida\n";
