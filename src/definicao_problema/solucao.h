@@ -40,7 +40,7 @@ class Solucao{
   public:
     Solucao(Instancia &_inst, double _penalidade1 = 1000.0, double _penalidade2 = 1000.0, double _penalidade3 = -1, int _quant_min = 60):
     inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2){
-      if(_penalidade3 < -1e3)
+      if(_penalidade3 < -1e-3)
         _penalidade3 = calculaPenalidade3();
       penalidade3 = _penalidade3;
 

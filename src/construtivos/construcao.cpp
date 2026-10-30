@@ -8,7 +8,7 @@
 #include "../utilitarios/util.h"
 
 double solucaoBangBang(const Instancia &inst, Solucao &s){
-  double nivelReservatorio, fluxoTotal, base;
+  double nivelReservatorio, fluxoTotal, base, volumeBombeado;
   bool ativas;
   s.zerarVetorSolucao();
   for(const Reservatorio &r : inst.reservatorios){
@@ -21,29 +21,30 @@ double solucaoBangBang(const Instancia &inst, Solucao &s){
     ativas = false;
     for(int i = 0; i < inst.nHoras; i++){
       base = nivelReservatorio - r.getConsumo(i);
+      volumeBombeado = 0;
 
       for(int k = 1; k <= (60 / Solucao::getQUANT_MIN()); k++){
-        if(ativas && base + (fluxoTotal * k) > r.getVolumeMax()){
+        if(ativas && base + fluxoTotal + volumeBombeado > r.getVolumeMax()){
           ativas = false;
+          break;
         }
-        if(base < r.getLimInferior()){
+        if(base + volumeBombeado < r.getLimInferior()){
           ativas = true;
         }
         
-        for(int b : r.getBombasAcopladas()){
-          if(ativas){
+        if(ativas){
+          for(int b : r.getBombasAcopladas()){
             s.movimento(i + (b * inst.nHoras), +1);
           }
         }
-        if(ativas){
-          nivelReservatorio = base + (fluxoTotal * k);
-        }
         
-        else{
-          nivelReservatorio = base;
-        }
+        if(ativas){
+          volumeBombeado += fluxoTotal;
+        }    
+
       }
 
+      nivelReservatorio = base + volumeBombeado;
 
       
     }
