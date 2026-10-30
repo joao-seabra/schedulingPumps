@@ -63,7 +63,7 @@ double solucaoAleatoria(const Instancia &inst, Solucao &s){
 
   int n = inteiroAleatorio(1, tam - 1);
   for(int i = 0; i < n; i++){
-    vetorAleatorio[i] = inteiroAleatorio(0, 60 / Solucao::getQUANT_MIN()) * Solucao::getQUANT_MIN();
+    vetorAleatorio[i] = inteiroAleatorio(0, (int)(60 / Solucao::getQUANT_MIN())) * Solucao::getQUANT_MIN();
   }
   embaralhaVetor(vetorAleatorio);
 
