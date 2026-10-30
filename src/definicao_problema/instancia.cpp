@@ -5,6 +5,7 @@
 
 #include <cctype>
 #include <cstdlib>
+#include <limits>
 
 
 
@@ -64,7 +65,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
           std::cerr << "Vetor de tarifa por hora já preenchido" << std::endl;
           exit(1);
         }
-        double tarifaMax = 0, tarifaMin = __DBL_MAX__;
+        double tarifaMax = 0, tarifaMin = std::numeric_limits<double>::max(); 
         double tarifa;
         for(int i = 0; i < result.nHoras; i++){
           if(!(arquivoTWLS >> tarifa)){
