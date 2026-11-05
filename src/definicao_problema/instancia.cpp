@@ -5,6 +5,7 @@
 
 #include <cctype>
 #include <cstdlib>
+#include <limits>
 
 
 
@@ -44,14 +45,14 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
           std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
           exit(1);
         }
-        result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, refReservatorio));
+        result.bombas.push_back(Bomba(potencia, fluxo / 60, htopo, eficiencia, refReservatorio));
         result.nBombas++;
         break;
       }
       case 't':{
         arquivoTWLS >> tarifaPico >> tarifaNormal;
-        result.tarifaNormal = tarifaNormal;
-        result.tarifaPico = tarifaPico;
+        result.tarifaNormal = tarifaNormal / 60;
+        result.tarifaPico = tarifaPico / 60;
         break;
       }
       case 'n':{
@@ -64,13 +65,14 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
           std::cerr << "Vetor de tarifa por hora já preenchido" << std::endl;
           exit(1);
         }
-        double tarifaMax = 0, tarifaMin = __DBL_MAX__;
+        double tarifaMax = 0, tarifaMin = std::numeric_limits<double>::max(); 
         double tarifa;
         for(int i = 0; i < result.nHoras; i++){
           if(!(arquivoTWLS >> tarifa)){
             std::cerr << "Erro ao ler tarifas" << std::endl;
             exit(1);
           }
+          tarifa = tarifa / 60;
           if(tarifa > tarifaMax) tarifaMax = tarifa;
           if(tarifa < tarifaMin) tarifaMin = tarifa;
           result.tarifaPorHora.push_back(tarifa);
@@ -135,7 +137,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
     for(int i = 0; i < result.nHoras; i++){
       int horaDoDia = i % 24;
       if(horaDoDia >= 18 && horaDoDia < 21) 
-        result.tarifaPorHora.at(i) = tarifaPico;
+        result.tarifaPorHora.at(i) = result.tarifaPico;
 
     }
   }
@@ -159,7 +161,7 @@ std::ostream& operator<<(std::ostream& os, Instancia &inst){
   }
   os << "Horas que serao planejadas: " << inst.nHoras << std::endl;
   os << std::fixed << std::setprecision(3)
-      << "Tarifa de pico: R$" << inst.tarifaPico << " Tarifa Normal: R$" << inst.tarifaNormal;
+      << "Tarifa de pico: R$" << inst.tarifaPico * 60 << " Tarifa Normal: R$" << inst.tarifaNormal * 60;
 
 
   return os;

@@ -9,7 +9,7 @@ class Reservatorio;
 class Bomba{
   private:
     double potencia; //KW
-    double fluxo; //Fluxo nominal (m3/h)
+    double fluxo; //Fluxo nominal (m3/min)
     double alturaDeTopo; //Head height (mca)
     double eficiencia;
     int reservatorioAcoplado;
@@ -36,7 +36,7 @@ class Bomba{
     friend std::ostream& operator<<(std::ostream& os, const Bomba &b){
       os << std::fixed << std::setprecision(2);
       os << "Potência: " << b.potencia << "kW\n";
-      os << "Fluxo: " << b.fluxo << "m3/h\n";
+      os << "Fluxo: " << b.fluxo * 60 << "m3/h\n";
       os << "Altura de topo: " << b.alturaDeTopo << "mca\n";
       os << "Eficiência: " << b.eficiencia << "\n";
 
