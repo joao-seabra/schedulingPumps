@@ -146,18 +146,23 @@ int main(int argc, char const *argv[]){
           break;
       }
 
-      case 6: { // Imprimir solução atual;
+      case 6: { // ILS
+        
+        break;
+      }
+
+      case 7: { // Imprimir solução atual;
         std::cout << "\nSolucao atual:\n";
         imprimeSolucao(inst, s);
         break;
       }
 
-      case 7: { // Imprimir informações da Instância
+      case 8: { // Imprimir informações da Instância
         std::cout << "\nInstância:\n" << inst << std::endl;
         break;
       }
 
-      case 8: {
+      case 9: {
         validaEImprimeSolucao(inst, s);
         break;
       }
