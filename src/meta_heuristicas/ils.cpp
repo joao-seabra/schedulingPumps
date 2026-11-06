@@ -1,6 +1,5 @@
 #include "ils.h"
 
-#include <cmath>
 
 #include "../definicao_problema/instancia.h"
 #include "../definicao_problema/solucao.h"
@@ -23,7 +22,12 @@ Solucao perturbacao(Instancia &inst, Solucao &s, int nivel){
 }
 
 void selecionaVizinho(Solucao &s){
-  
+  int pos = inteiroAleatorio(1, s.getVetorSolucao().size());
+  pos = pos - 1; //evitar overflow do .size() tava dando segmentation fault
+  int sinalMultiplicador = inteiroAleatorio(0, 1);
+  sinalMultiplicador = (!sinalMultiplicador) ? -1 : 1;
+
+  s.movimento(pos, sinalMultiplicador);
 }
 
 double ils(Instancia &inst, Solucao &s, int vezesMax, int ilsMax){

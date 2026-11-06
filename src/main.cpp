@@ -14,7 +14,7 @@
 #include "refinamento/descida.h"
 #include "meta_heuristicas/multiStart.h"
 #include "meta_heuristicas/simulatedAnnealing.h"
-#include <cstring>
+#include "meta_heuristicas/ils.h"
 
 
 void imprimeSolucao(const Instancia &inst, Solucao &s);
@@ -35,7 +35,7 @@ int main(int argc, char const *argv[]){
   if(argc > 2){
     nomeArquivoTWLS = argv[1];
     nomeArquivoConsumo = argv[2];
-  }
+  } 
 
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
   Solucao s(inst, penalidade1, penalidade2, penalidade3, quant_min);
@@ -147,7 +147,19 @@ int main(int argc, char const *argv[]){
       }
 
       case 6: { // ILS
-        
+        std::cout << "\nIterated local search:\n";
+        cron = new Cronometro();
+
+        ils(inst, s, 5, 800);
+
+        if(cron != nullptr){
+          std::cout << std ::fixed << std::setprecision(8)
+                    << "Tempo de execução = " << cron->segundosDecorridos()
+                    << "s\n";
+          delete cron;
+          cron = nullptr;
+        }
+        imprimeSolucao(inst, s);
         break;
       }
 

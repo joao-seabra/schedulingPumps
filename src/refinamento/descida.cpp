@@ -49,8 +49,8 @@ double vizinhoRandomico(Instancia &inst, Solucao &s, int &melhorI, int &melhorMu
 
 double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI, int &melhorMultiplicador){
   int n = s.getVetorSolucao().size();
-
-  double fo = s.getFAvaliacao();
+  melhorI = 0;
+  melhorMultiplicador = 0;
   double delta = 0;
   bool melhorou = false;
 
@@ -71,21 +71,21 @@ double vizinhoPrimeiraMelhora(Instancia &inst, Solucao &s, int &melhorI, int &me
     }
   }
 
-  return delta + fo;
+  return delta;
 
 }
 
 double firstImprovement(Instancia &inst, Solucao &s){
 
-  double foVizinho;
-  int melhorI, melhorMultiplicador;
+  double deltaVizinho = 0;
+  int melhorI = 0, melhorMultiplicador = 0;
   bool melhorou = false;
 
   do{
     melhorou = false;
 
-    foVizinho = vizinhoPrimeiraMelhora(inst, s, melhorI, melhorMultiplicador);
-    if(foVizinho < s.getFAvaliacao()){
+    deltaVizinho = vizinhoPrimeiraMelhora(inst, s, melhorI, melhorMultiplicador);
+    if(deltaVizinho < -1e-9){
       s.movimento(melhorI, melhorMultiplicador);
       melhorou = true;
     }

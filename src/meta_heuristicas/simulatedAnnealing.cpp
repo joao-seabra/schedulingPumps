@@ -1,7 +1,6 @@
 #include "simulatedAnnealing.h"
 
 #include <cmath>
-#include <assert.h>
 
 #include "../definicao_problema/instancia.h"
 #include "../definicao_problema/solucao.h"
