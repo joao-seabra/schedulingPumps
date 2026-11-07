@@ -150,7 +150,8 @@ int main(int argc, char const *argv[]){
         std::cout << "\nIterated local search:\n";
         cron = new Cronometro();
 
-        ils(inst, s, 5, 800);
+        int ilsMax = 6000;
+        ils(inst, s, 5, ilsMax);
 
         if(cron != nullptr){
           std::cout << std ::fixed << std::setprecision(8)
