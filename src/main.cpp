@@ -15,6 +15,7 @@
 #include "meta_heuristicas/multiStart.h"
 #include "meta_heuristicas/simulatedAnnealing.h"
 #include "meta_heuristicas/ils.h"
+#include "meta_heuristicas/busca_tabu.h"
 
 
 void imprimeSolucao(const Instancia &inst, Solucao &s);
@@ -164,18 +165,36 @@ int main(int argc, char const *argv[]){
         break;
       }
 
-      case 7: { // Imprimir solução atual;
+      case 7: { // busca tabu 
+        std::cout << "\nBusca Tabu:\n";
+        cron = new Cronometro();
+
+        int tabuMax = 600;
+        int tamanho_lista_tabu = 7;
+        busca_tabu(inst, s, tamanho_lista_tabu, tabuMax);
+        if(cron != nullptr){
+          std::cout << std ::fixed << std::setprecision(8)
+                    << "Tempo de execução = " << cron->segundosDecorridos()
+                    << "s\n";
+          delete cron;
+          cron = nullptr;
+        }
+        imprimeSolucao(inst, s);
+        break;
+      }
+
+      case 8: { // Imprimir solução atual;
         std::cout << "\nSolucao atual:\n";
         imprimeSolucao(inst, s);
         break;
       }
 
-      case 8: { // Imprimir informações da Instância
+      case 9: { // Imprimir informações da Instância
         std::cout << "\nInstância:\n" << inst << std::endl;
         break;
       }
 
-      case 9: {
+      case 10: {
         validaEImprimeSolucao(inst, s);
         break;
       }

@@ -14,13 +14,14 @@ int menuPrincipal()
                    << "                4. Multi-Start \n"
                    << "                5. Simulated Annealing \n"
                    << "                6. ILS \n"
-                   << "                7. Imprimir solução atual \n"
-                   << "                8. Imprimir Informações da Instância \n"
-                   << "                9. Imprimir Informações dos níveis dos reservatorios \n"
+                   << "                7. Busca Tabu \n"
+                   << "                8. Imprimir solução atual \n"
+                   << "                9. Imprimir Informações da Instância \n"
+                   << "                10. Imprimir Informações dos níveis dos reservatorios \n"
                    << "                0. Sair \n"
                    << "                Escolha: ";
         std::cin >> escolha;
-    } while (escolha < 0 || escolha > 9);
+    } while (escolha < 0 || escolha > 10);
     return escolha;
 }
 
