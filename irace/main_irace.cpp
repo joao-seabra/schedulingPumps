@@ -29,8 +29,8 @@ int main (int argc, char* argv[]) {
   double beta = 1.1;
   double gamma = 0.95;
   double tempFinal = 0.01;
-  int penalidade1 = 1;
-  int penalidade2 = 1;
+  int penalidade1 = -1;
+  int penalidade2 = -1;
   double penalidade3 = -1;
   int quant_min = 10;
 
