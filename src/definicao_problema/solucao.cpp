@@ -248,6 +248,16 @@ double custoPorM3(const Bomba &b, double tarifa){
   return calculaCustoEnergiaInstantaneo(b, tarifa) / b.getFluxo();
 }
 
+double Solucao::calculaPenalidadeDura(){
+  double custoTotal = 0;
+  for(const Bomba &b:inst.bombas){
+    // custo de todas as bombas ficarem ligadas por 24 horas em horário de pico
+    custoTotal += calculaCustoEnergiaInstantaneo(b, inst.tarifaPico) * 60 * 24;
+  }
+  return custoTotal;
+}
+
+
 double Solucao::calculaPenalidade3(){
   double media = 0;
   for(const Bomba &b:inst.bombas){

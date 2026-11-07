@@ -29,17 +29,25 @@ class Solucao{
     double calculaCusto(int &nInterrupcoes);
 
     void calculaNivel(TipoVetorSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado);
-    double calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia);
     double calculaDeltaMovimento(int i, int multiplicador, int &novo_numInterrupcoes, double &novo_custoEnergia);
     double calculaEnergia(int &nInterrupcoes);
     double calculaLambda(int nInterrupcoes);
 
 
     static void setQUANT_MIN(int n) {quant_min = n;}
+    double calculaPenalidadeDura();
     double calculaPenalidade3();
   public:
-    Solucao(Instancia &_inst, double _penalidade1 = 1000.0, double _penalidade2 = 1000.0, double _penalidade3 = -1, int _quant_min = 60):
+    Solucao(Instancia &_inst, int _quant_min = -1, double _penalidade1 = -1, double _penalidade2 = -1, double _penalidade3 = -1):
     inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2){
+      if(_penalidade1 < -1e-3)
+        _penalidade1 = calculaPenalidadeDura();
+      penalidade1 = _penalidade1;
+
+      if(_penalidade2 < -1e-3)
+        _penalidade2 = calculaPenalidadeDura();
+      penalidade2 = _penalidade2;
+
       if(_penalidade3 < -1e-3)
         _penalidade3 = calculaPenalidade3();
       penalidade3 = _penalidade3;

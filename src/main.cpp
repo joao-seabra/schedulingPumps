@@ -23,8 +23,8 @@ void imprimeSolucao(const Instancia &inst, Solucao &s);
 int main(int argc, char const *argv[]){
   semente(1000);
 
-  const double penalidade1 = 139;
-  const double penalidade2 = 177;
+  const double penalidade1 = -1;
+  const double penalidade2 = -1;
   const double penalidade3 = -1;
 
   const int quant_min = 10;
@@ -38,7 +38,7 @@ int main(int argc, char const *argv[]){
   } 
 
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
-  Solucao s(inst, penalidade1, penalidade2, penalidade3, quant_min);
+  Solucao s(inst, quant_min, penalidade1, penalidade2, penalidade3);
 
   std::cout << "\nInstância:\n" << inst << std::endl;
   std::cout << "\nSolução:\n";
