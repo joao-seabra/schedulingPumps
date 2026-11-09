@@ -5,6 +5,7 @@
 #include "../definicao_problema/instancia.h"
 #include "../definicao_problema/solucao.h"
 #include "../utilitarios/aleatorio.h"
+#include "../utilitarios/cronometro.h"
 
 double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i, int &multiplicador);
 
@@ -57,9 +58,10 @@ double temperaturaInicial(Instancia &inst, Solucao &s, double beta, double gamma
 
 }
 
-double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, 
+double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, double tempoMax,
                           double tempInicial, double tempFinal)
 {
+  Cronometro cron;
   Solucao sEstrela(s);
   
   double temperatura = tempInicial;
@@ -68,7 +70,7 @@ double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX,
   double foVizinho = s.getFAvaliacao();
 
   int i, multiplicador;
-  while(temperatura > tempFinal){
+  while(temperatura > tempFinal && cron.segundosDecorridos() < tempoMax){
     for(int iter = 0; iter < saMAX; iter++){
       foVizinho = vizinhoSimulatedAnnealing(inst, s, i, multiplicador);
 

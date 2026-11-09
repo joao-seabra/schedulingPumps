@@ -4,6 +4,6 @@
 class Instancia;
 class Solucao;
 
-double multistart(Instancia &inst, Solucao &s, int iterMax);
+double multistart(Instancia &inst, Solucao &s, double tempoMax);
 
 #endif

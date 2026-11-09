@@ -5,6 +5,7 @@
 #include "../definicao_problema/solucao.h"
 #include "../refinamento/descida.h"
 #include "../utilitarios/aleatorio.h"
+#include "../utilitarios/cronometro.h"
 
 void selecionaVizinho(Solucao &s);
 
@@ -30,22 +31,20 @@ void selecionaVizinho(Solucao &s){
   s.movimento(pos, sinalMultiplicador);
 }
 
-double ils(Instancia &inst, Solucao &s, int vezesMax, int nivelMax, int ilsMax){
+double ils(Instancia &inst, Solucao &s, int vezesMax, int nivelMax, double tempoMax){
 
-  int iter = 0, melhorIter = 0;
+  Cronometro cron;
   int nivel = 1, contNivel = 1;
 
   firstImprovement(inst, s);
   Solucao sLinha = s;
   
-  while(iter - melhorIter < ilsMax){
-    iter++;
+  while(cron.segundosDecorridos() < tempoMax){
     sLinha = perturbacao(inst, s, nivel);
     firstImprovement(inst, sLinha);
 
     if(sLinha.getFAvaliacao() < s.getFAvaliacao()){
       s = sLinha;
-      melhorIter = iter;
       nivel = 1;
       contNivel = 1;
     }

@@ -4,6 +4,6 @@
 class Solucao;
 class Instancia;
 
-double ils(Instancia &inst, Solucao &s, int vezesMax, int nivelMax, int ilsMax);
+double ils(Instancia &inst, Solucao &s, int vezesMax, int nivelMax, double tempoMax);
 
 #endif

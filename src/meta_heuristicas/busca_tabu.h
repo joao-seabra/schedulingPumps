@@ -4,7 +4,7 @@
 class Solucao;
 class Instancia;
 
-double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, int tabuMax);
+double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, double tempoMax);
 
 
 

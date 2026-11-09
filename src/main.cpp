@@ -24,6 +24,8 @@ void imprimeSolucao(const Instancia &inst, Solucao &s);
 int main(int argc, char const *argv[]){
   semente(1000);
 
+  const double tempoMAX = 5; //tempo máximo para cada metaheurística em segundos
+
   const double penalidade1 = -1;
   const double penalidade2 = -1;
   const double penalidade3 = -1;
@@ -114,7 +116,8 @@ int main(int argc, char const *argv[]){
       case 4: { // multi-start
           std::cout << "\nMulti-Start:\n";
           cron = new Cronometro();
-          multistart(inst, s, 100);
+          
+          multistart(inst, s, tempoMAX);
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
                       << "Tempo de execução = " << cron->segundosDecorridos()
@@ -134,7 +137,7 @@ int main(int argc, char const *argv[]){
           double tempInicial = temperaturaInicial(inst, s, 1.8, 0.75, saMAX);
           std::cout << std::fixed << std::setprecision(2) 
                     << "\nTemperatura Inicial: " << tempInicial << std::endl;
-          simulatedAnnealing(inst, s, 0.997, saMAX, tempInicial, 0.002);
+          simulatedAnnealing(inst, s, 0.997, saMAX, tempoMAX, tempInicial, 0.002);
 
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
@@ -151,8 +154,7 @@ int main(int argc, char const *argv[]){
         std::cout << "\nIterated local search:\n";
         cron = new Cronometro();
 
-        int ilsMax = 6000;
-        ils(inst, s, 5, 8, ilsMax);
+        ils(inst, s, 5, 8, tempoMAX);
 
         if(cron != nullptr){
           std::cout << std ::fixed << std::setprecision(8)
@@ -169,9 +171,8 @@ int main(int argc, char const *argv[]){
         std::cout << "\nBusca Tabu:\n";
         cron = new Cronometro();
 
-        int tabuMax = 600;
         int tamanho_lista_tabu = 7;
-        busca_tabu(inst, s, tamanho_lista_tabu, tabuMax);
+        busca_tabu(inst, s, tamanho_lista_tabu, tempoMAX);
         if(cron != nullptr){
           std::cout << std ::fixed << std::setprecision(8)
                     << "Tempo de execução = " << cron->segundosDecorridos()
