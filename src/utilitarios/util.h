@@ -7,7 +7,7 @@ class Solucao;
 class Instancia;
 
 bool validaSolucao(const Instancia &inst, const Solucao &s);
-bool validaSolucao(const Instancia &inst, const std::vector<bool> &s);
+bool validaEImprimeSolucao(const Instancia &inst, const Solucao &s);
 
 
 #endif

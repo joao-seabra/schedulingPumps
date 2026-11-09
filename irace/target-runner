@@ -17,8 +17,8 @@ CONFIG_PARAMS=$*
 BASENAME=$(basename $INSTANCE_FILE)
 
 # Arquivos temporários para salvar a saída do C++ para não sujar o terminal do irace
-STDOUT="sa_${CONFIG_ID}_${INSTANCE_ID}.stdout"
-STDERR="sa_${CONFIG_ID}_${INSTANCE_ID}.stderr"
+STDOUT="irace/sa_${CONFIG_ID}_${INSTANCE_ID}.stdout"
+STDERR="irace/sa_${CONFIG_ID}_${INSTANCE_ID}.stderr"
 
 # Roda o seu executável passando os argumentos do CLI11
 $EXE -i $BASENAME --seed $SEED $CONFIG_PARAMS > $STDOUT 2> $STDERR

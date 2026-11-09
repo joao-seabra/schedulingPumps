@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include <vector>
 
 #include "definicao_problema/instancia.h"
@@ -13,22 +14,34 @@
 #include "refinamento/descida.h"
 #include "meta_heuristicas/multiStart.h"
 #include "meta_heuristicas/simulatedAnnealing.h"
+#include "meta_heuristicas/ils.h"
+#include "meta_heuristicas/busca_tabu.h"
 
 
 void imprimeSolucao(const Instancia &inst, Solucao &s);
 
-int main(){
+
+int main(int argc, char const *argv[]){
   semente(1000);
 
-  const double penalidade1 = 51;
-  const double penalidade2 = 186;
-  const double penalidade3 = 0.012;
+  const double tempoMAX = 5; //tempo máximo para cada metaheurística em segundos
 
-  const std::string nomeArquivoTWLS("Instancia/TWLS_INFO.txt");
-  const std::string nomeArquivoConsumo("Instancia/INFO_CONSUMO.txt");
+  const double penalidade1 = -1;
+  const double penalidade2 = -1;
+  const double penalidade3 = -1;
+
+  const int quant_min = 10;
+  
+  std::string nomeArquivoTWLS("Instancia/T1R2B.txt");
+  std::string nomeArquivoConsumo("Instancia/T1R2BCONSUMO.txt");
+
+  if(argc > 2){
+    nomeArquivoTWLS = argv[1];
+    nomeArquivoConsumo = argv[2];
+  } 
 
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
-  Solucao s(inst, penalidade1, penalidade2, penalidade3);
+  Solucao s(inst, quant_min, penalidade1, penalidade2, penalidade3);
 
   std::cout << "\nInstância:\n" << inst << std::endl;
   std::cout << "\nSolução:\n";
@@ -39,7 +52,7 @@ int main(){
   do {
     escolha = menuPrincipal();
     if (escolha != 0 && escolha != 1) {
-        std::cout << "\nLembre-se de gerar uma solucao" <<
+        std::cout << "\nLembre-se de gerar uma solucao " <<
                 "inicial caso necessario (opcao 1)!\n";
         //continue;
     }
@@ -73,7 +86,7 @@ int main(){
       case 2: { // Descida Randômica
           std::cout << "\nDescida Randômica:\n";
           cron = new Cronometro();
-          randomDescent(inst, s, 0.7 * 24 * inst.nBombas);
+          randomDescent(inst, s, 0.7 * inst.nHoras * inst.nBombas);
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
                       << "Tempo de execução = " << cron->segundosDecorridos()
@@ -103,7 +116,8 @@ int main(){
       case 4: { // multi-start
           std::cout << "\nMulti-Start:\n";
           cron = new Cronometro();
-          multistart(inst, s, 100);
+          
+          multistart(inst, s, tempoMAX);
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
                       << "Tempo de execução = " << cron->segundosDecorridos()
@@ -119,11 +133,11 @@ int main(){
           std::cout << "\nSimulated Annealing:\n";
           cron = new Cronometro();
 
-          int saMAX = 348;
-          double tempInicial = temperaturaInicial(inst, s, 1.1, 0.96, saMAX);
+          int saMAX = 800;
+          double tempInicial = temperaturaInicial(inst, s, 1.8, 0.75, saMAX);
           std::cout << std::fixed << std::setprecision(2) 
                     << "\nTemperatura Inicial: " << tempInicial << std::endl;
-          simulatedAnnealing(inst, s, 0.924, saMAX, tempInicial, 0.35);
+          simulatedAnnealing(inst, s, 0.997, saMAX, tempoMAX, tempInicial, 0.002);
 
           if(cron != nullptr){
             std::cout << std ::fixed << std::setprecision(8)
@@ -136,15 +150,54 @@ int main(){
           break;
       }
 
-      case 6: { // Imprimir solução atual;
+      case 6: { // ILS
+        std::cout << "\nIterated local search:\n";
+        cron = new Cronometro();
+
+        ils(inst, s, 5, 8, tempoMAX);
+
+        if(cron != nullptr){
+          std::cout << std ::fixed << std::setprecision(8)
+                    << "Tempo de execução = " << cron->segundosDecorridos()
+                    << "s\n";
+          delete cron;
+          cron = nullptr;
+        }
+        imprimeSolucao(inst, s);
+        break;
+      }
+
+      case 7: { // busca tabu 
+        std::cout << "\nBusca Tabu:\n";
+        cron = new Cronometro();
+
+        int tamanho_lista_tabu = 7;
+        busca_tabu(inst, s, tamanho_lista_tabu, tempoMAX);
+        if(cron != nullptr){
+          std::cout << std ::fixed << std::setprecision(8)
+                    << "Tempo de execução = " << cron->segundosDecorridos()
+                    << "s\n";
+          delete cron;
+          cron = nullptr;
+        }
+        imprimeSolucao(inst, s);
+        break;
+      }
+
+      case 8: { // Imprimir solução atual;
         std::cout << "\nSolucao atual:\n";
         imprimeSolucao(inst, s);
         break;
       }
 
-      case 7: { // Imprimir informações da Instância
-          std::cout << "\nInstância:\n" << inst << std::endl;
-          break;
+      case 9: { // Imprimir informações da Instância
+        std::cout << "\nInstância:\n" << inst << std::endl;
+        break;
+      }
+
+      case 10: {
+        validaEImprimeSolucao(inst, s);
+        break;
       }
 
       default:
@@ -171,6 +224,6 @@ void imprimeSolucao(const Instancia &inst, Solucao &s){
   std::cout << "\nPenalidade por variação de volume:" << s.getPenalidade3() << std::endl;
 
   if (validaSolucao(inst, s)) std::cout << "\nSolução válida\n";
-  else std::cout << "\nSoulução Inválida\n";
+  else std::cout << "\nSolução Inválida\n";
 
 }

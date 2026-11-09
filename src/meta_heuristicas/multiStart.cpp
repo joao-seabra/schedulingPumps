@@ -7,13 +7,11 @@
 #include "../refinamento/descida.h"
 #include "../construtivos/construcao.h"
 #include "../utilitarios/util.h"
+#include "../utilitarios/cronometro.h"
 
-double multistart(Instancia &inst, Solucao &s, int iterMax){
+double multistart(Instancia &inst, Solucao &s, double tempoMax){
+  Cronometro cron;
   Solucao sEstrela(s);
-  /*
-  if(s.getVetorSolucao().empty() || !validaSolucao(inst, s)){
-    solucaoBangBang(inst, s);
-  } */
 
   if(s.getVetorSolucao().empty()){
     solucaoBangBang(inst, s);
@@ -22,7 +20,7 @@ double multistart(Instancia &inst, Solucao &s, int iterMax){
   else s.funcaoAvaliacao();
 
   int iter = 0;
-  while(iter < iterMax){
+  while(cron.segundosDecorridos() < tempoMax){
     iter++;
     solucaoAleatoria(inst, sEstrela);
     randomDescent(inst, sEstrela, 100);

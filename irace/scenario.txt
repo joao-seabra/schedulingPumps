@@ -3,7 +3,7 @@
 # ==============================================================================
 
 # Orçamento computacional máximo de execuções
-maxExperiments = 2000
+maxExperiments = 5000
 
 # Arquivos essenciais
 parameterFile = "./parameters.txt"

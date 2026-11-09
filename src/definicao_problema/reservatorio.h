@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 class Reservatorio{
   private:
@@ -43,7 +44,7 @@ class Reservatorio{
     void adicionarConsumo(double c) { consumo.push_back(c); }
 
 
-    friend std::ostream& operator<<(std::ostream& os, Reservatorio &r){
+    friend std::ostream& operator<<(std::ostream& os, const Reservatorio &r){
       os << std::fixed << std::setprecision(2);
       os << "Volume Max: " << r.volume_max << "m3\n";
       os << "Volume min: " << r.lim_inferior << "m3\n";
@@ -51,7 +52,7 @@ class Reservatorio{
 
       os << "Consumo:\n";
       os << std::left << std::setprecision(1);
-      for(int j = 0; j < 24; j++){
+      for(size_t j = 0; j < r.consumo.size(); j++){
         os << std::setw(4) << j << " ";
       }
       os << std::endl;

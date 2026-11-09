@@ -3,3 +3,7 @@
 exe
 exe
 *.Rdata
+*.Rdata
+*.stderr
+*.stdout
+/.vscode

@@ -1,33 +1,21 @@
 #include "simulatedAnnealing.h"
 
 #include <cmath>
-#include <assert.h>
 
 #include "../definicao_problema/instancia.h"
 #include "../definicao_problema/solucao.h"
 #include "../utilitarios/aleatorio.h"
+#include "../utilitarios/cronometro.h"
 
-double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i);
-double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i, int &j);
-
-double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i, int &j){
-  int n = s.getVetorSolucao().size();
-  i = inteiroAleatorio(0, n - 1);
-
-  do{
-    j = inteiroAleatorio(0, n - 1);
-  } while(i==j);
-
-  double foVizinho = s.calculaDeltaTroca(i, j) + s.getFAvaliacao();
-
-  return foVizinho;
-}
+double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i, int &multiplicador);
 
 
-double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i){
+double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i, int &multiplicador){
   i = inteiroAleatorio(0, s.getVetorSolucao().size() - 1);
+  int sinalMultiplicador = inteiroAleatorio(0, 1);
+  multiplicador = !sinalMultiplicador ? -1 : 1;
 
-  double foVizinho = s.calculaDeltaInversao(i) + s.getFAvaliacao();
+  double foVizinho = s.calculaDeltaMovimento(i, multiplicador) + s.getFAvaliacao();
 
   return foVizinho;
 
@@ -36,7 +24,7 @@ double vizinhoSimulatedAnnealing(Instancia &inst, Solucao &s, int &i){
 double temperaturaInicial(Instancia &inst, Solucao &s, double beta, double gamma, int saMAX){
   double fo = s.getFAvaliacao();
 
-  int aceitos = 0, i;
+  int aceitos = 0, i, multiplicador;
   
   double temperaturaInicial = 10;
   double foVizinho, delta, chanceAceitacao;
@@ -46,7 +34,7 @@ double temperaturaInicial(Instancia &inst, Solucao &s, double beta, double gamma
     aceitos = 0;
 
     for(int iter = 0; iter < saMAX; iter++){
-      foVizinho = vizinhoSimulatedAnnealing(inst, s, i);
+      foVizinho = vizinhoSimulatedAnnealing(inst, s, i, multiplicador);
       delta = foVizinho - fo;
 
       if(delta < 0){
@@ -70,9 +58,10 @@ double temperaturaInicial(Instancia &inst, Solucao &s, double beta, double gamma
 
 }
 
-double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, 
+double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, double tempoMax,
                           double tempInicial, double tempFinal)
 {
+  Cronometro cron;
   Solucao sEstrela(s);
   
   double temperatura = tempInicial;
@@ -80,13 +69,13 @@ double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX,
   double chanceAceitacao, aceitacao, delta;
   double foVizinho = s.getFAvaliacao();
 
-  int i;
-  while(temperatura > tempFinal){
+  int i, multiplicador;
+  while(temperatura > tempFinal && cron.segundosDecorridos() < tempoMax){
     for(int iter = 0; iter < saMAX; iter++){
-      foVizinho = vizinhoSimulatedAnnealing(inst, s, i);
+      foVizinho = vizinhoSimulatedAnnealing(inst, s, i, multiplicador);
 
       if(foVizinho < s.getFAvaliacao()){
-        s.movimentoInversao(i);
+        s.movimento(i, multiplicador);
         if(s.getFAvaliacao() < sEstrela.getFAvaliacao()){
           sEstrela = s;
         }
@@ -98,7 +87,7 @@ double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX,
         chanceAceitacao = std::exp(-delta/temperatura);
 
         if(aceitacao < chanceAceitacao){
-          s.movimentoInversao(i);
+          s.movimento(i, multiplicador);
         }
       }
     }

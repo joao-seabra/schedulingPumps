@@ -8,6 +8,6 @@ class Solucao;
 
 double temperaturaInicial(Instancia &inst, Solucao &s, double beta, double gamma, int saMAX);
 
-double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, double tempInicial, double tempFinal);
+double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, double tempoMax, double tempInicial, double tempFinal);
 
 #endif

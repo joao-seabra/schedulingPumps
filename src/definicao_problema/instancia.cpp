@@ -3,6 +3,10 @@
 #include <iomanip>
 #include <fstream>
 
+#include <cctype>
+#include <cstdlib>
+#include <limits>
+
 
 
 
@@ -19,6 +23,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
 
   char tipo;
   
+  int nHoras;
   double tarifaPico, tarifaNormal;
   
   double capacidade, volumeInicial;
@@ -36,24 +41,54 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
       }
       case 'b': {
         arquivoTWLS >> eficiencia >> potencia >> fluxo >> htopo >> refReservatorio;
-        if(refReservatorio + 1 > result.nReservatorios){
+        if(refReservatorio + 1 > result.nReservatorios || refReservatorio < 0){
           std::cerr << "\nErro na leitura da bomba " << result.nBombas + 1 << std::endl;
           exit(1);
         }
-        result.bombas.push_back(Bomba(potencia, fluxo, htopo, eficiencia, refReservatorio));
+        result.bombas.push_back(Bomba(potencia, fluxo / 60, htopo, eficiencia, refReservatorio));
         result.nBombas++;
         break;
       }
       case 't':{
         arquivoTWLS >> tarifaPico >> tarifaNormal;
-        result.tarifaNormal = tarifaNormal;
-        result.tarifaPico = tarifaPico;
+        result.tarifaNormal = tarifaNormal / 60;
+        result.tarifaPico = tarifaPico / 60;
+        break;
+      }
+      case 'n':{
+        arquivoTWLS >> nHoras;
+        result.nHoras = nHoras;
+        break;
+      }
+      case 'v':{
+        if(!result.tarifaPorHora.empty()){
+          std::cerr << "Vetor de tarifa por hora já preenchido" << std::endl;
+          exit(1);
+        }
+        double tarifaMax = 0, tarifaMin = std::numeric_limits<double>::max(); 
+        double tarifa;
+        for(int i = 0; i < result.nHoras; i++){
+          if(!(arquivoTWLS >> tarifa)){
+            std::cerr << "Erro ao ler tarifas" << std::endl;
+            exit(1);
+          }
+          tarifa = tarifa / 60;
+          if(tarifa > tarifaMax) tarifaMax = tarifa;
+          if(tarifa < tarifaMin) tarifaMin = tarifa;
+          result.tarifaPorHora.push_back(tarifa);
+        }
+        
+        int tarifasLidas = result.tarifaPorHora.size();
+        if(tarifasLidas != result.nHoras || tarifasLidas == 0){
+          std::cerr << "Número inválido de tarifas no vetor" << std::endl;
+          exit(1);
+        }
+
+        result.tarifaNormal = tarifaMin;
+        result.tarifaPico = tarifaMax;
         break;
       }
       case '#':
-        arquivoTWLS.ignore(1000, '\n');
-        break;
-      case '\n':
         arquivoTWLS.ignore(1000, '\n');
         break;
       
@@ -83,17 +118,27 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
   int nDados;
   arquivoConsumo >> nDados;
 
-  if(nDados / 24 != result.nReservatorios){
-    std::cerr << "Arquivo de consumo deve conter exatamente 24 valores por reservatório(lidos: "
-            << nDados << ")\n";
+  if(nDados != result.nHoras * result.nReservatorios){
+    std::cerr << "Arquivo de consumo deve conter exatamente " << result.nHoras 
+              <<" valores por reservatório(lidos: " << nDados << ")\n";
     std::exit(1);
   }
 
   double dado;
   for(int i = 0; i < result.nReservatorios; i++){
-    for(int j = 0; j < 24; j++){
+    for(int j = 0; j < result.nHoras; j++){
       arquivoConsumo >> dado;
       result.reservatorios.at(i).adicionarConsumo(dado);
+    }
+  }
+
+  if(result.tarifaPorHora.empty()){
+    result.tarifaPorHora.assign(result.nHoras, result.tarifaNormal);
+    for(int i = 0; i < result.nHoras; i++){
+      int horaDoDia = i % 24;
+      if(horaDoDia >= 18 && horaDoDia < 21) 
+        result.tarifaPorHora.at(i) = result.tarifaPico;
+
     }
   }
 
@@ -114,8 +159,9 @@ std::ostream& operator<<(std::ostream& os, Instancia &inst){
   for(Bomba &b : inst.bombas){
     os << b << std::endl;
   }
+  os << "Horas que serao planejadas: " << inst.nHoras << std::endl;
   os << std::fixed << std::setprecision(3)
-      << "Tarifa de pico: R$" << inst.tarifaPico << " Tarifa Normal: R$" << inst.tarifaNormal;
+      << "Tarifa de pico: R$" << inst.tarifaPico * 60 << " Tarifa Normal: R$" << inst.tarifaNormal * 60;
 
 
   return os;

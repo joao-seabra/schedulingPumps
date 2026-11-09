@@ -4,50 +4,78 @@
 
 #include "instancia.h"
 #include "../utilitarios/cronometro.h"
+#include <cmath>
+
+int Solucao::quant_min = 60;
+
+#define INTERRUPCOES_LACUNA 2 //Quantas interrupções devem ser consideradas quando se tem uma lacuna no vetor Solucao
 
 double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa);
 
+bool horaComLacuna(const TipoVetorSolucao &v, int i, int nHoras);
+int interrupcoesAfetadas(const TipoVetorSolucao &v, int i, int nHoras);
+
+bool horaComLacuna(const TipoVetorSolucao &v, int i, int nHoras){
+  /*Confere a existência de uma lacuna*/
+  // Hora parcial (0 < minutos < 60) com as duas horas vizinhas ligadas. Os minutos só encostam
+  // em uma das vizinhas, então sobra uma lacuna.
+  int hora = i % nHoras;
+  if(hora == 0 || hora + 1 >= nHoras) 
+    return false;
+  if(v.at(i) == 0 || v.at(i) >= 60) 
+    return false;
+  if(v.at(i - 1) == 0 || v.at(i + 1) == 0) 
+    return false;
+
+  return true;
+}
+
+int interrupcoesAfetadas(const TipoVetorSolucao &v, int i, int nHoras){
+  /*Calcula as interrupções que dependem da posição i*/
+  int hora = i % nHoras;
+  int total = 0;
+  if(hora > 0){ //confere o horário anterior
+    if((bool) v.at(i) != (bool) v.at(i - 1)){ //se x estiver ligada e y desligada
+      total++;
+    }
+    if(horaComLacuna(v, i - 1, nHoras)){ //se i-1 tiver uma lacuna
+      total += INTERRUPCOES_LACUNA; //somar 2 interrupções
+    }
+  }
+  if(hora + 1 < nHoras){ //confere o próximo horário
+    if((bool) v.at(i) != (bool) v.at(i + 1)){ //se x estiver ligada e y desligada
+      total++;
+    }
+    if(horaComLacuna(v, i + 1, nHoras)){ //se i+1 tiver uma lacuna
+      total += INTERRUPCOES_LACUNA; //somar 2 interrupções
+    }
+  }
+  if(horaComLacuna(v, i, nHoras)){ //se o próprio i for uma lacuna
+    total += INTERRUPCOES_LACUNA; //somar 2 interrupções
+  }
+
+  return total;
+}
+
 double Solucao::calculaEnergia(int &nInterrupcoes){
-  double custoEnergia = 0;
+  double custoEnergia = 0, tarifa = 0;;
 
   nInterrupcoes = 0;
 
-  for(int i = 0; i < 18; i++){ //percorre o vetor em cada hora de não pico
+  for(int i = 0; i < inst.nHoras; i++){ //percorre o vetor em cada hora
+    tarifa = inst.tarifaPorHora[i];
     for(int j = 0; j < inst.nBombas; j++){
-      if(vetorSolucao.at((i + (j * 24)))){ //se a bomba j estiver ativa na hora i
-        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), inst.tarifaNormal);
-      }
-      if(vetorSolucao.at((i + (j * 24))) != vetorSolucao.at((i + 1 + (j * 24)))){
-        //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-        nInterrupcoes++;
-      }
-    }
-  }
-
-  for(int i = 18; i < 21; i++){ //percorre o vetor em cada hora de pico
-    for(int j = 0; j < inst.nBombas; j++){
-      if(vetorSolucao.at((i + (j * 24)))){ //se a bomba j estiver ativa na hora i
-        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), inst.tarifaPico);
-      }
-      if(vetorSolucao.at((i + (j * 24))) != vetorSolucao.at((i + 1 + (j * 24)))){
-        //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-        nInterrupcoes++;
-      }
-    }
-  }
-
-  for(int i = 21; i < 24; i++){
-    for(int j = 0; j < inst.nBombas; j++){
-      if(vetorSolucao.at((i + (j * 24)))){ //se a bomba j estiver ativa na hora i
-        custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), inst.tarifaNormal);
-      }
-      if(i < 23){
-        if(vetorSolucao.at((i + (j * 24))) != vetorSolucao.at((i + 1 + (j * 24)))){
-        //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-        nInterrupcoes++;
+      custoEnergia += calculaCustoEnergiaInstantaneo(inst.bombas.at(j), tarifa) * vetorSolucao.at((i + (j * inst.nHoras)));
+      if(i + 1 < inst.nHoras){
+        if((bool) vetorSolucao.at((i + (j * inst.nHoras))) != (bool) vetorSolucao.at((i + 1 + (j * inst.nHoras)))){
+          //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
+          nInterrupcoes++;
         }
       }
-      
+      if(horaComLacuna(vetorSolucao, i + (j * inst.nHoras), inst.nHoras)){
+        nInterrupcoes += INTERRUPCOES_LACUNA;
+      }
+
     }
   }
 
@@ -56,7 +84,8 @@ double Solucao::calculaEnergia(int &nInterrupcoes){
 }
 
 double Solucao::calculaCusto(int &nInterrupcoes){
-  return ( calculaEnergia(nInterrupcoes) ) / calculaLambda(nInterrupcoes);
+  double energia = calculaEnergia(nInterrupcoes);
+  return energia  / calculaLambda(nInterrupcoes);
 }
 
 double Solucao::calculaCusto(){
@@ -67,10 +96,13 @@ double Solucao::calculaCusto(){
 
 
 double calculaCustoEnergiaInstantaneo(const Bomba &bomba, double tarifa){
-  double vazao = bomba.getFluxo() / 3600.0; // m3/h para m3/s
+  /*Custo de energia por minuto que uma bomba fica ligada*/
+  double vazao = bomba.getFluxo() / 60.0; // m3/min para m3/s
   double potenciaW = PESO_ESPECIFICO_AGUA * vazao * bomba.getAlturaDeTopo() / bomba.getEficiencia();
   double potenciakW = potenciaW / 1000.0;
   return potenciakW * tarifa;
+
+  // return bomba.getPotencia() * tarifa;
 }
 
 double Solucao::calculaLambda(int nInterrupcoes){
@@ -93,18 +125,16 @@ void Solucao::calculaNivel(double &excedenteEncontrado, double &faltaEncontrada,
   calculaNivel(vetorSolucao, excedenteEncontrado, faltaEncontrada, variacaoDoNivelEncontrado);
 }
 
-void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
-  double excessoHora, faltaHora;
+void Solucao::calculaNivel(TipoVetorSolucao &vetorS, double &excedenteEncontrado, double &faltaEncontrada, double &variacaoDoNivelEncontrado){
+  double excessoHora, faltaHora, variacaoDia;
   double totalExcedente = 0, totalFalta = 0, totalVariacao = 0;
   double nivel;
   for(Reservatorio &r : inst.reservatorios){
     nivel = r.getVolumeInicial();
-    for(int i = 0; i < 24; i++){
+    for(int i = 0; i < inst.nHoras; i++){
       nivel -= r.getConsumo(i);
       for(int bombaAcoplada : r.getBombasAcopladas()){
-        if(vetorS.at(i + (bombaAcoplada * 24))){
-          nivel += inst.bombas.at(bombaAcoplada).getFluxo();
-        }
+        nivel += inst.bombas.at(bombaAcoplada).getFluxo() * vetorS.at(i + (bombaAcoplada * inst.nHoras));
       }
     
       faltaHora = r.getLimInferior() - nivel;
@@ -119,8 +149,12 @@ void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado
       
       
     }
+    // totalVariacao += std::abs(r.getVolumeInicial() - nivel);
+    variacaoDia = r.getVolumeInicial() - nivel;
+    if(variacaoDia > 0){
+      totalVariacao += variacaoDia;
+    } 
     
-    totalVariacao += std::abs(r.getVolumeInicial() - nivel);
   }
 
   variacaoDoNivelEncontrado = totalVariacao;
@@ -128,85 +162,73 @@ void Solucao::calculaNivel(std::vector<bool> vetorS, double &excedenteEncontrado
   faltaEncontrada = totalFalta;
 }
 
-void Solucao::movimentoInversao(int i){
-  fAvaliacao += calculaDeltaInversao(i, nInterrupcoes, custoEnergia);
-  vetorSolucao[i] = !vetorSolucao[i];
+
+void Solucao::movimento(int i, int multiplicador){
+  /*Movimento: O multiplicador será aplicado a um QUANT_MIN fixo e somado à posição i do vetor*/
+  int p = Solucao::getQUANT_MIN(); //Definindo p para o movimento (Nesse caso 5 minutos)
+  p = p * multiplicador;
+  int result = vetorSolucao[i] + p;
+  /*
+  if(result < 0 || result > 60)
+    return false;
+  */
+  if(result < 0) result = 0;
+  else if(result > 60) result = 60;
+  
+  fAvaliacao += calculaDeltaMovimento(i, multiplicador, nInterrupcoes, custoEnergia);
+  vetorSolucao[i] = result;
+
 }
 
-void Solucao::movimentoTroca(int i, int j){
-  if(i != j && vetorSolucao[i] != vetorSolucao[j]){
-    movimentoInversao(i);
-    movimentoInversao(j);
-  }
+void Solucao::movimentoLigarBomba(int i){
+  movimento(i, 60);
 }
 
-double Solucao::calculaDeltaInversao(int i, int &novo_numInterrupcoes, double &novo_custoEnergia){
-  int bomba = i / 24;
-  int hora = i % 24;
-  
-  double custoEnergiaInstantaneo = (hora < 18 || hora >= 21) ? 
-  calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaNormal) : calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaPico);
-  
-  if(!vetorSolucao.at(i)){
-    novo_custoEnergia = custoEnergia + custoEnergiaInstantaneo;
-  }
-  else{
-    novo_custoEnergia = custoEnergia - custoEnergiaInstantaneo;
-  }
-  
+void Solucao::movimentoDesligarBomba(int i){
+  movimento(i, -60);
+}
 
-  novo_numInterrupcoes = nInterrupcoes;
-  if(hora > 0){
-    if(!vetorSolucao.at(i) != vetorSolucao.at(i - 1)){
-      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-      novo_numInterrupcoes++;
-    }
-    else{
-      novo_numInterrupcoes--;
-    }
-  }
-  if(hora < 23){
-    if(!vetorSolucao.at(i) != vetorSolucao.at(i + 1)){
-      //cada vez que uma bomba é ligada ou desligada, devemos penalizar pelo maior custo de manutenção
-      novo_numInterrupcoes++;
-    }
-    else{
-      novo_numInterrupcoes--;
-    }
-  }
+double Solucao::calculaDeltaMovimento(int i, int multiplicador){
+  int temp1 = 0;
+  double temp2 = 0;
+  return calculaDeltaMovimento(i, multiplicador, temp1, temp2);
+}
+
+double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInterrupcoes, double &novo_custoEnergia){
+  int bomba = i / inst.nHoras;
+  int hora = i % inst.nHoras;
+  int result = multiplicador * Solucao::getQUANT_MIN();
+  result = (vetorSolucao.at(i) + result > 60) ?  ( 60 - vetorSolucao.at(i) ) : result;
+  result = (vetorSolucao.at(i) + result < 0) ?  ( 0 - vetorSolucao.at(i) ) : result;
+  
+  TipoVetorSolucao temp; //Usado para calcular as penalizações por nível e o número de interrupções  
+  temp = vetorSolucao;
+  temp.at(i) = temp.at(i) + result;
+
+  double custoEnergiaInstantaneo = calculaCustoEnergiaInstantaneo(inst.bombas.at(bomba), inst.tarifaPorHora.at(hora));
+  novo_custoEnergia = custoEnergia + (custoEnergiaInstantaneo * result);
+  
+  
+  //calculo do número de interrupções:
+  int interrupcoesAntes = interrupcoesAfetadas(vetorSolucao, i, inst.nHoras); //interrupções ao redor de i no vetor original
+  int interrupcoesDepois = interrupcoesAfetadas(temp, i, inst.nHoras); //interrupções ao redor de i no novo vetor
+  novo_numInterrupcoes = nInterrupcoes - interrupcoesAntes + interrupcoesDepois;
 
 
   //calculo das penalizações
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
-  std::vector<bool> temp = vetorSolucao;
-  temp.at(i) = !temp.at(i);
   calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
 
   double novaFA = novo_custoEnergia / calculaLambda(novo_numInterrupcoes) 
       + deltaExcedente * penalidade1 + deltaFalta * penalidade2 + deltaNivel * penalidade3;
 
   return novaFA - fAvaliacao;
-}
 
-double Solucao::calculaDeltaInversao(int i){
-  int temp1 = 0;
-  double temp2 = 0;
-  return calculaDeltaInversao(i, temp1, temp2);
-}
-
-double Solucao::calculaDeltaTroca(int i, int j){
-  if(i != j && vetorSolucao.at(i) != vetorSolucao.at(j)){
-    Solucao temp(*this);
-    temp.movimentoInversao(i);
-    temp.movimentoInversao(j);
-
-    return temp.fAvaliacao - fAvaliacao;
-  }
-  return 0;
 }
 
 
-bool Solucao::alteraVetorSolucao(std::vector<bool> novaSolucao){
+
+bool Solucao::alteraVetorSolucao(TipoVetorSolucao novaSolucao){
   if(novaSolucao.size() != vetorSolucao.size()){
     return false;
   }
@@ -217,6 +239,34 @@ bool Solucao::alteraVetorSolucao(std::vector<bool> novaSolucao){
   return true;
 }
 
+void Solucao::zerarVetorSolucao(){
+  vetorSolucao.assign(inst.nHoras * inst.nBombas, 0);
+  funcaoAvaliacao();
+}
+
+double custoPorM3(const Bomba &b, double tarifa){
+  return calculaCustoEnergiaInstantaneo(b, tarifa) / b.getFluxo();
+}
+
+double Solucao::calculaPenalidadeDura(){
+  double custoTotal = 0;
+  for(const Bomba &b:inst.bombas){
+    // custo de todas as bombas ficarem ligadas por 24 horas em horário de pico
+    custoTotal += calculaCustoEnergiaInstantaneo(b, inst.tarifaPico) * 60 * 24;
+  }
+  return custoTotal;
+}
+
+
+double Solucao::calculaPenalidade3(){
+  double media = 0;
+  for(const Bomba &b:inst.bombas){
+    media += custoPorM3(b, inst.tarifaNormal);
+  }
+  media /= inst.nBombas;
+  media = std::round(media * 1000) / 1000.0;
+  return media;
+}
 
 Solucao& Solucao::operator=(const Solucao& s2) {
     if (this == &s2) {
@@ -239,17 +289,18 @@ std::ostream& operator<<(std::ostream& os, const Solucao &s){
 
   os << std::left;
   for(int i = 0; i < s.inst.nBombas; i++){
-    for(int j = 0; j < 24; j++){
+    os << "Bomba b" << i << ":\n";
+    for(int j = 0; j < s.inst.nHoras; j++){
       os << std::setw(2) << j << " ";
     }
-
+    os << std::endl;
+    os << std::left;
+    for(int j = 0; j < s.inst.nHoras; j++){
+      os << std::setw(2) << s.vetorSolucao.at((j + (i * s.inst.nHoras))) << " ";
+    }
+    os << std::endl << std::endl;
   }
-  os << std::endl;
 
-  os << std::left;
-  for(bool b : s.vetorSolucao){
-    os << std::setw(2) << b << " ";
-  }
 
   os << std::endl << "\nFunção objetivo: " << s.fAvaliacao << "\nNúmero de interrupções: " << s.nInterrupcoes;
 
