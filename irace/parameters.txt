@@ -1,11 +1,23 @@
 # Nome          Switch           Tipo   Valores / Limites
 construcao      "--construcao "  c      (1, 2)
+metodo          "--metodo "      c      (1, 3, 4)
+
 alpha           "--alpha "       r      (0.85, 0.998)
 samax           "--samax "       c      (600, 700, 800, 900 ,1000, 1200)
 beta            "--beta "        r      (1.05, 2.00)
 gamma           "--gamma "       r      (0.75, 0.99)
 tempfinal       "--tempfinal "   r      (0.001, 0.1)
+
+ils_vezes_max   "--ils_vezes_max " c    (3, 4, 5, 6)
+ils_nivel_max   "--ils_nivel_max " c    (6, 8, 10, 12, 14)
+
+tamanho_lista_tabu "--tamanho_lista_tabu " c (5, 7, 9, 11, 17)
+
+
 # penalidade1     "--penalidade1 " c      (1, 10, 20, 50, 100, 200)
 # penalidade2     "--penalidade2 " c      (1, 10, 20, 50, 100, 200)
 # penalidade3     "--penalidade3 " r      (0.0, 0.05)
-#quant_min      "--quant_min " c (1, 5, 10, 15, 30, 60)
+# quant_min      "--quant_min " c (1, 5, 10, 15, 30, 60)
+# tempo_max      "--tempo_max " c (1.5, 2, 2.5, 3)
+
+
