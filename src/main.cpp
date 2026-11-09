@@ -151,7 +151,7 @@ int main(int argc, char const *argv[]){
         cron = new Cronometro();
 
         int ilsMax = 6000;
-        ils(inst, s, 5, ilsMax);
+        ils(inst, s, 5, 8, ilsMax);
 
         if(cron != nullptr){
           std::cout << std ::fixed << std::setprecision(8)

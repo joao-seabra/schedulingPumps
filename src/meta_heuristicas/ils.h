@@ -1,9 +1,9 @@
 #ifndef ILS_H
 #define ILS_H
 
-typedef class Solucao;
-typedef class Instancia;
+class Solucao;
+class Instancia;
 
-double ils(Instancia &inst, Solucao &s, int vezesMax, int ilsMax);
+double ils(Instancia &inst, Solucao &s, int vezesMax, int nivelMax, int ilsMax);
 
 #endif

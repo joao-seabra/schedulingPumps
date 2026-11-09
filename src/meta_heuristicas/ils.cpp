@@ -30,7 +30,7 @@ void selecionaVizinho(Solucao &s){
   s.movimento(pos, sinalMultiplicador);
 }
 
-double ils(Instancia &inst, Solucao &s, int vezesMax, int ilsMax){
+double ils(Instancia &inst, Solucao &s, int vezesMax, int nivelMax, int ilsMax){
 
   int iter = 0, melhorIter = 0;
   int nivel = 1, contNivel = 1;
@@ -52,6 +52,8 @@ double ils(Instancia &inst, Solucao &s, int vezesMax, int ilsMax){
 
     else if(++contNivel > vezesMax) {
       nivel++;
+      if(nivel > nivelMax)
+        nivel = 1;
       contNivel = 1;
     }
   }
