@@ -76,8 +76,21 @@ double vizinhoMelhorTabu(Instancia &inst, Solucao &s, int &melhorI, int &melhorM
 
     int multiplicador = 1;
     for(int i = 0; i < n; i++){
+        int valorI = sLinha.getVetorSolucao().at(i); // Usado para conferir se o movimento é válido
         for(int j = 0; j < 2; j++){
             multiplicador *= -1;
+
+            //calculando previamente o efeito do movimento naquela posicao da solução
+            int proximoValor = valorI + multiplicador * Solucao::getQUANT_MIN();
+            if(proximoValor > 60) 
+                proximoValor = 60;
+            if(proximoValor < 0)
+                proximoValor = 0;
+            
+            if(proximoValor == valorI){
+                continue; // movimento sem alteração
+            }
+
             sLinha.movimento(i, multiplicador);
             foLinha = sLinha.getFAvaliacao();
 
@@ -111,6 +124,12 @@ double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, int tabuMax){
     while ((iterBT - melhorIter) < tabuMax && iterBT < iterMaxAbsoluto){
         iterBT++;
         fo = vizinhoMelhorTabu(inst, s, melhorI, melhorMultiplicador, foEstrela, listaTabu);
+        
+        if(melhorMultiplicador == 0){
+            listaTabu.clear(); 
+            continue; // Reset da lista tabu quando não encontra vizinho válido
+        }
+        
         s.movimento(melhorI, melhorMultiplicador);
         atualizaListaTabu(listaTabu, tamanhoLista, s, melhorI, melhorMultiplicador);
 
