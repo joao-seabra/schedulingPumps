@@ -4,6 +4,7 @@
 #include "../definicao_problema/solucao.h"
 #include "../refinamento/descida.h"
 #include "../utilitarios/aleatorio.h"
+#include "../utilitarios/cronometro.h"
 
 #include <deque>
 #include <vector>
@@ -109,20 +110,17 @@ double vizinhoMelhorTabu(Instancia &inst, Solucao &s, int &melhorI, int &melhorM
     return melhorFo;
 }
 
-double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, int tabuMax){
+double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, double tempoMax){
+    Cronometro cron;
     Solucao sEstrela = s;
     double fo = s.getFAvaliacao();
     double foEstrela = sEstrela.getFAvaliacao();
 
     std::deque<tipoTabu> listaTabu;
 
-    int iterBT = 0;
-    int melhorIter = 0;
-    const int iterMaxAbsoluto = 100000; // evita ciclos infinitos
 
     int melhorI, melhorMultiplicador;
-    while ((iterBT - melhorIter) < tabuMax && iterBT < iterMaxAbsoluto){
-        iterBT++;
+    while (cron.segundosDecorridos() < tempoMax){
         fo = vizinhoMelhorTabu(inst, s, melhorI, melhorMultiplicador, foEstrela, listaTabu);
         
         if(melhorMultiplicador == 0){
@@ -136,7 +134,6 @@ double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, int tabuMax){
         if(fo < foEstrela){
             foEstrela = fo;
             sEstrela = s;
-            melhorIter = iterBT;
         }
 
     }
