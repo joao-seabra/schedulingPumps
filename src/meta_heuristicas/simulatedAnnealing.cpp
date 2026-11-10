@@ -62,40 +62,43 @@ double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, 
                           double tempInicial, double tempFinal)
 {
   Cronometro cron;
-  Solucao sEstrela(s);
+  while(cron.segundosDecorridos() <= tempoMax){
+    Solucao sEstrela = s;
+    
+    double temperatura = tempInicial;
   
-  double temperatura = tempInicial;
-
-  double chanceAceitacao, aceitacao, delta;
-  double foVizinho = s.getFAvaliacao();
-
-  int i, multiplicador;
-  while(temperatura > tempFinal && cron.segundosDecorridos() < tempoMax){
-    for(int iter = 0; iter < saMAX; iter++){
-      foVizinho = vizinhoSimulatedAnnealing(inst, s, i, multiplicador);
-
-      if(foVizinho < s.getFAvaliacao()){
-        s.movimento(i, multiplicador);
-        if(s.getFAvaliacao() < sEstrela.getFAvaliacao()){
-          sEstrela = s;
-        }
-      }
-      else{
-        delta = foVizinho - s.getFAvaliacao();
-        
-        aceitacao = realAleatorio(0.0, 1);
-        chanceAceitacao = std::exp(-delta/temperatura);
-
-        if(aceitacao < chanceAceitacao){
+    double chanceAceitacao, aceitacao, delta;
+    double foVizinho = s.getFAvaliacao();
+  
+    int i, multiplicador;
+    while(temperatura > tempFinal){
+      for(int iter = 0; iter < saMAX; iter++){
+        foVizinho = vizinhoSimulatedAnnealing(inst, s, i, multiplicador);
+  
+        if(foVizinho < s.getFAvaliacao()){
           s.movimento(i, multiplicador);
+          if(s.getFAvaliacao() < sEstrela.getFAvaliacao()){
+            sEstrela = s;
+          }
+        }
+        else{
+          delta = foVizinho - s.getFAvaliacao();
+          
+          aceitacao = realAleatorio(0.0, 1);
+          chanceAceitacao = std::exp(-delta/temperatura);
+  
+          if(aceitacao < chanceAceitacao){
+            s.movimento(i, multiplicador);
+          }
         }
       }
+  
+      temperatura *= alpha;
     }
+                            
+    s = sEstrela;
 
-    temperatura *= alpha;
   }
-                          
-  s = sEstrela;
 
   return s.funcaoAvaliacao();
 
