@@ -13,10 +13,10 @@
 typedef struct tipoTabu{
     int posicao;
     int multiplicador;
-    int hashSolucao;
+    uint64_t hashSolucao;
 }tipoTabu;
 
-constexpr uint64_t hashTabu(const Solucao &s){
+uint64_t hashTabu(const Solucao &s){
     uint64_t hash = 14695981039346656037ULL; //offset do hash
     uint64_t prime = 1099511628211ULL; //numero primo
     
@@ -28,7 +28,7 @@ constexpr uint64_t hashTabu(const Solucao &s){
 }
 
 
-bool estaNaListaTabu(int posicao, int multiplicador, int &hashEncontrado,
+bool estaNaListaTabu(int posicao, int multiplicador, uint64_t &hashEncontrado,
                       const std::deque<tipoTabu> &listaTabu)
 {
     for (const auto &movimento : listaTabu) {
@@ -40,7 +40,7 @@ bool estaNaListaTabu(int posicao, int multiplicador, int &hashEncontrado,
     return false;
 }
 
-bool criterioAspiracao(const Solucao &sLinha, double foEstrela, int hashEncontrado, double chanceAceitacao){
+bool criterioAspiracao(const Solucao &sLinha, double foEstrela, uint64_t hashEncontrado, double chanceAceitacao){
     if(sLinha.getFAvaliacao() < foEstrela - 1e-9) {
         // subtrair 1e-9 evita aceitar soluções somente por causa de erros de arredondamento 
         return true; // aceita uma solução melhor
@@ -76,7 +76,7 @@ double vizinhoMelhorTabu(Instancia &inst, Solucao &s, int &melhorI, int &melhorM
     Solucao sLinha = s;
     double foLinha = s.getFAvaliacao();
 
-    int hash = 0;
+    uint64_t hash = 0;
 
     int multiplicador = 1;
     for(int i = 0; i < n; i++){
