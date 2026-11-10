@@ -8,6 +8,7 @@
 
 #include <deque>
 #include <vector>
+#include <functional>
 
 typedef struct tipoTabu{
     int posicao;
@@ -15,13 +16,13 @@ typedef struct tipoTabu{
     int hashSolucao;
 }tipoTabu;
 
-int hashTabu(const Solucao &s){
-    const int p = 7; // numero primo
-    int hash = 0;
-    int i = 1;
+constexpr uint64_t hashTabu(const Solucao &s){
+    uint64_t hash = 14695981039346656037ULL; //offset do hash
+    uint64_t prime = 1099511628211ULL; //numero primo
+    
     for(const auto &valor : s.getVetorSolucao()){
-        hash += (valor * i * p) % (int)2e32;
-        i++;
+        hash ^= static_cast<uint64_t>(valor);
+        hash *= prime;
     }
     return hash;
 }
@@ -40,8 +41,10 @@ bool estaNaListaTabu(int posicao, int multiplicador, int &hashEncontrado,
 }
 
 bool criterioAspiracao(const Solucao &sLinha, double foEstrela, int hashEncontrado, double chanceAceitacao){
-    if(sLinha.getFAvaliacao() < foEstrela) 
+    if(sLinha.getFAvaliacao() < foEstrela - 1e-9) {
+        // subtrair 1e-9 evita aceitar soluções somente por causa de erros de arredondamento 
         return true; // aceita uma solução melhor
+    }
     if(hashEncontrado != hashTabu(sLinha)){
         double aleatorio = realAleatorio(0.0, 1);
         if(aleatorio <= chanceAceitacao)
@@ -128,8 +131,8 @@ double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, double tempoMax
             continue; // Reset da lista tabu quando não encontra vizinho válido
         }
         
-        s.movimento(melhorI, melhorMultiplicador);
         atualizaListaTabu(listaTabu, tamanhoLista, s, melhorI, melhorMultiplicador);
+        s.movimento(melhorI, melhorMultiplicador);
 
         if(fo < foEstrela){
             foEstrela = fo;
