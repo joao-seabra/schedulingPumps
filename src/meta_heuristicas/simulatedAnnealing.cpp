@@ -71,7 +71,7 @@ double simulatedAnnealing(Instancia &inst, Solucao &s, double alpha, int saMAX, 
     double foVizinho = s.getFAvaliacao();
   
     int i, multiplicador;
-    while(temperatura > tempFinal){
+    while(temperatura > tempFinal && cron.segundosDecorridos() < tempoMax){
       for(int iter = 0; iter < saMAX; iter++){
         foVizinho = vizinhoSimulatedAnnealing(inst, s, i, multiplicador);
   
