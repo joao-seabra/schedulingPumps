@@ -171,7 +171,7 @@ int main(int argc, char const *argv[]){
         std::cout << "\nBusca Tabu:\n";
         cron = new Cronometro();
 
-        int tamanho_lista_tabu = 7;
+        int tamanho_lista_tabu = s.getVetorSolucao().size() / 3;
         busca_tabu(inst, s, tamanho_lista_tabu, tempoMAX);
         if(cron != nullptr){
           std::cout << std ::fixed << std::setprecision(8)
