@@ -1,0 +1,12 @@
+# tarifa_pico | tarifa_normal
+t 0.3120 0.2496
+
+# volume_max | volume_inicial | volume_min
+r 7000 3000 1000
+
+# eficiencia | pot_KW | fluxo_m3/h | Htopo_mca | ref_reservatorio
+b 0.75 595 1800 38 0
+b 0.75 445 1440 38 0
+b 0.75 260 828 38 0
+b 0.75 260 828 38 0
+b 0.75 596 1800 38 0

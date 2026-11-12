@@ -26,7 +26,7 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
   int nHoras;
   double tarifaPico, tarifaNormal;
   
-  double capacidade, volumeInicial;
+  double capacidade, volumeInicial, volumeMinimo;
   double eficiencia, potencia, fluxo, htopo;
   int refReservatorio;
 
@@ -34,8 +34,11 @@ Instancia leInstancia(const std::string &nomeArquivoTWLS, const std::string &nom
   while(arquivoTWLS >> tipo){
     switch (std::tolower(tipo)){
       case 'r':{
-        arquivoTWLS >> capacidade >> volumeInicial;
-        result.reservatorios.push_back(Reservatorio(capacidade, volumeInicial));
+        arquivoTWLS >> capacidade >> volumeInicial >> volumeMinimo;
+        if(volumeMinimo < 0)
+          result.reservatorios.push_back(Reservatorio(capacidade, volumeInicial));
+        else 
+          result.reservatorios.push_back(Reservatorio(capacidade, volumeInicial, volumeMinimo));
         result.nReservatorios++;
         break;
       }

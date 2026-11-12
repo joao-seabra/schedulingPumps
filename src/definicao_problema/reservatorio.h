@@ -15,13 +15,19 @@ class Reservatorio{
 
     std::vector<double> consumo;
   public:
-    Reservatorio(double _volume_max, double _volume_atual):
+    Reservatorio(double _volume_max, double _volume_atual, double _volume_min = -1):
       volume_inicial(_volume_atual){
         volume_max = _volume_max;
+        if(_volume_min < 0){
+          lim_inferior = (1.0/3.0) * _volume_max; //limite inferior 1/3 do maximo
+        }
+        else{
+          lim_inferior = _volume_min;
+        }
 
         lim_superior = (0.7) * _volume_max; //limite superior 7/10 do maximo
-        lim_inferior = (1.0/3.0) * _volume_max; //limite inferior 1/3 do maximo
-      }
+    }
+
     virtual ~Reservatorio(){}
 
     // Getters
