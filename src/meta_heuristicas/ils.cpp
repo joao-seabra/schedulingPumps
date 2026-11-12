@@ -43,7 +43,7 @@ double ils(Instancia &inst, Solucao &s, int vezesMax, int nivelMax, double tempo
     sLinha = perturbacao(inst, s, nivel);
     firstImprovement(inst, sLinha);
 
-    if(sLinha.getFAvaliacao() < s.getFAvaliacao()){
+    if(sLinha.getFAvaliacao() < s.getFAvaliacao() - 1e-9){
       s = sLinha;
       nivel = 1;
       contNivel = 1;

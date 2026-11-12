@@ -46,8 +46,6 @@ bool criterioAspiracao(const Solucao &sLinha, double foEstrela, uint64_t hashEnc
         return true; // aceita uma solução melhor
     }
     if(hashEncontrado != hashTabu(sLinha)){
-        double aleatorio = realAleatorio(0.0, 1);
-        if(aleatorio <= chanceAceitacao)
             return true;
     }
     return false;
