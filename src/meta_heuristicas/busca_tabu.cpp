@@ -9,11 +9,11 @@
 #include <deque>
 #include <vector>
 #include <functional>
+#include <algorithm>
 
 typedef struct tipoTabu{
-    int posicao;
+    int duracaoTabu;
     int multiplicador;
-    uint64_t hashSolucao;
 }tipoTabu;
 
 uint64_t hashTabu(const Solucao &s){
@@ -28,43 +28,44 @@ uint64_t hashTabu(const Solucao &s){
 }
 
 
-bool estaNaListaTabu(int posicao, int multiplicador, uint64_t &hashEncontrado,
-                      const std::deque<tipoTabu> &listaTabu)
+bool estaNaListaTabu(int iter, int posicao, int multiplicador,
+                      const std::vector<tipoTabu> &listaTabu)
 {
-    for (const auto &movimento : listaTabu) {
-        if (movimento.posicao == posicao && movimento.multiplicador == multiplicador) {
-            hashEncontrado = movimento.hashSolucao;
+    if(listaTabu.at(posicao).duracaoTabu >= iter){
+        if(listaTabu.at(posicao).multiplicador == multiplicador)
             return true;
-        }
     }
     return false;
 }
 
-bool criterioAspiracao(const Solucao &sLinha, double foEstrela, uint64_t hashEncontrado, double chanceAceitacao){
+bool criterioAspiracao(const Solucao &sLinha, double foEstrela, const std::deque<uint64_t> listaHash){
     if(sLinha.getFAvaliacao() < foEstrela - 1e-9) {
         // subtrair 1e-9 evita aceitar soluções somente por causa de erros de arredondamento 
         return true; // aceita uma solução melhor
     }
-    if(hashEncontrado != hashTabu(sLinha)){
-            return true;
+    if(std::find(listaHash.begin(), listaHash.end(), hashTabu(sLinha)) == listaHash.end()){
+        // procura hash na lista, se não estiver a solução sLinha é aceita
+        return true;
     }
     return false;
 }
 
-void atualizaListaTabu(std::deque<tipoTabu> &listaTabu, int tamanhoMax, 
+void atualizaListaTabu(std::vector<tipoTabu> &listaTabu, std::deque<uint64_t> &hash, size_t hashMax, int duracaoTabu, 
                         Solucao &s, int posicao, int multiplicador)
 {
-    // Lista tabu de tamanho fixo
-    if(listaTabu.size() >= tamanhoMax){
-        listaTabu.pop_front();
+    if(hash.size() >= hashMax){
+        hash.pop_front();
     }
+
+    hash.push_back(hashTabu(s));
     // proíbe o retorno para uma solução já vista
-    listaTabu.push_back(tipoTabu{posicao, -multiplicador, hashTabu(s)});
+    listaTabu.at(posicao) = tipoTabu{duracaoTabu, -multiplicador};
 
 }
 
 double vizinhoMelhorTabu(Instancia &inst, Solucao &s, int &melhorI, int &melhorMultiplicador, 
-                        double foEstrela, std::deque<tipoTabu> &listaTabu)
+                        double foEstrela, int iter, std::vector<tipoTabu> &listaTabu, 
+                        std::deque<uint64_t> listaHash)
 {
     int n = s.getVetorSolucao().size();
     melhorI = 0;
@@ -73,8 +74,6 @@ double vizinhoMelhorTabu(Instancia &inst, Solucao &s, int &melhorI, int &melhorM
     
     Solucao sLinha = s;
     double foLinha = s.getFAvaliacao();
-
-    uint64_t hash = 0;
 
     int multiplicador = 1;
     for(int i = 0; i < n; i++){
@@ -96,7 +95,7 @@ double vizinhoMelhorTabu(Instancia &inst, Solucao &s, int &melhorI, int &melhorM
             sLinha.movimento(i, multiplicador);
             foLinha = sLinha.getFAvaliacao();
 
-            if((!estaNaListaTabu(i, multiplicador, hash, listaTabu)) || criterioAspiracao(sLinha, foEstrela, hash, 0.6)){
+            if((!estaNaListaTabu(iter, i, multiplicador, listaTabu)) || criterioAspiracao(sLinha, foEstrela, listaHash)){
                 if(foLinha < melhorFo){
                     melhorI = i;
                     melhorMultiplicador = multiplicador;
@@ -117,26 +116,29 @@ double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, double tempoMax
     double fo = s.getFAvaliacao();
     double foEstrela = sEstrela.getFAvaliacao();
 
-    std::deque<tipoTabu> listaTabu;
+    std::vector<tipoTabu> listaTabu(s.getVetorSolucao().size());
+    std::deque<uint64_t> hashsVizitados(tamanhoLista);
 
 
+    int iter = 0;
+    int duracaoTabu;
     int melhorI, melhorMultiplicador;
     while (cron.segundosDecorridos() < tempoMax){
-        fo = vizinhoMelhorTabu(inst, s, melhorI, melhorMultiplicador, foEstrela, listaTabu);
+        fo = vizinhoMelhorTabu(inst, s, melhorI, melhorMultiplicador, foEstrela, iter, listaTabu, hashsVizitados);
         
         if(melhorMultiplicador == 0){
             listaTabu.clear(); 
             continue; // Reset da lista tabu quando não encontra vizinho válido
         }
-        
-        atualizaListaTabu(listaTabu, tamanhoLista, s, melhorI, melhorMultiplicador);
+        duracaoTabu = inteiroAleatorio((int)(0.8 * tamanhoLista), (int)(1.2 * tamanhoLista));
+        atualizaListaTabu(listaTabu, hashsVizitados, tamanhoLista, iter + duracaoTabu, s, melhorI, melhorMultiplicador);
         s.movimento(melhorI, melhorMultiplicador);
 
         if(fo < foEstrela){
             foEstrela = fo;
             sEstrela = s;
         }
-
+        iter++;
     }
 
     s = sEstrela;
