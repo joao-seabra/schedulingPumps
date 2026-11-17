@@ -24,7 +24,7 @@ void imprimeSolucao(const Instancia &inst, Solucao &s);
 int main(int argc, char const *argv[]){
   semente(1000);
 
-  const double tempoMAX = 5; //tempo máximo para cada metaheurística em segundos
+  const double tempoMAX = 30; //tempo máximo para cada metaheurística em segundos
 
   const double penalidade1 = -1;
   const double penalidade2 = -1;
