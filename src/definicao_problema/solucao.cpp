@@ -283,7 +283,7 @@ double Solucao::calculaPenalidade3(){
   }
   media /= inst.nBombas;
   media = std::round(media * 1000) / 1000.0;
-  return media;
+  return media / alpha;
 }
 
 Solucao& Solucao::operator=(const Solucao& s2) {

@@ -64,6 +64,7 @@ class Solucao{
       penalidade2 = _penalidade2;
 
       if(_penalidade3 < -1e-3)
+        // _penalidade3 = calculaPenalidadeDura();
         _penalidade3 = calculaPenalidade3();
       penalidade3 = _penalidade3;
 

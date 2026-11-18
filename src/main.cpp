@@ -29,7 +29,7 @@ int main(int argc, char const *argv[]){
   const double penalidade1 = -1;
   const double penalidade2 = -1;
   const double penalidade3 = -1;
-  const double alpha = 0.8;
+  const double alpha = 0.6;
 
   const int quant_min = 10;
   
@@ -214,7 +214,7 @@ int main(int argc, char const *argv[]){
 void imprimeSolucao(const Instancia &inst, Solucao &s){
   double falta, excedente, variacaoNivel;
   s.calculaNivel(excedente, falta, variacaoNivel);
-  std::cout << std::fixed << std::setprecision(2);
+  std::cout << std::fixed << std::setprecision(3);
   std::cout << s << std::endl;
   std::cout << "\nCusto de energia elétrica de s:" << s.getCustoEnergia() << std::endl;
   std::cout << "\nPeso do Custo de energia elétrica de s:" << s.getAlpha() << std::endl;
