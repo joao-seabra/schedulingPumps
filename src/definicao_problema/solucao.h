@@ -25,6 +25,15 @@ class Solucao{
     double penalidade2;
     double penalidade3;
 
+    double Fa;
+    double Fb; // constante de normalização
+    double alpha; // peso para o custo de energia
+    double beta; // peso para o número de manutenções
+
+    double calculaFa(); // Limite para o custo de energia
+    double calculaFb(); // limite para o número de switches de bomba
+
+    double compoeFA(double energia, int nInterrupcoes, double excedente, double falta, double variacao);
 
     double calculaCusto(int &nInterrupcoes);
 
@@ -38,8 +47,14 @@ class Solucao{
     double calculaPenalidadeDura();
     double calculaPenalidade3();
   public:
-    Solucao(Instancia &_inst, int _quant_min = -1, double _penalidade1 = -1, double _penalidade2 = -1, double _penalidade3 = -1):
+    Solucao(Instancia &_inst, int _quant_min = -1, double _penalidade1 = -1, double _penalidade2 = -1, double _penalidade3 = -1, double _alpha = 0.8):
     inst(_inst), penalidade1(_penalidade1), penalidade2(_penalidade2){
+      
+      alpha = (_alpha <= 1 && _alpha >= 0) ? _alpha : 0.8;
+      beta = 1 - alpha;
+      Fa = calculaFa();
+      Fb = calculaFb();
+
       if(_penalidade1 < -1e-3)
         _penalidade1 = calculaPenalidadeDura();
       penalidade1 = _penalidade1;
@@ -74,6 +89,10 @@ class Solucao{
     double getPenalidade1() const { return penalidade1; }
     double getPenalidade2() const { return penalidade2; }
     double getPenalidade3() const { return penalidade3; }
+    double getAlpha() const { return alpha; }
+    double getBeta() const { return beta; }
+    double getF_a() const { return Fa; }
+    double getF_b() const { return Fb; }
     static double getQUANT_MIN() { return quant_min; }
 
     /*

@@ -127,7 +127,7 @@ double busca_tabu(Instancia &inst, Solucao &s, int tamanhoLista, double tempoMax
         fo = vizinhoMelhorTabu(inst, s, melhorI, melhorMultiplicador, foEstrela, iter, listaTabu, hashsVizitados);
         
         if(melhorMultiplicador == 0){
-            listaTabu.clear(); 
+            listaTabu.assign(listaTabu.size(), tipoTabu{0, 0});
             continue; // Reset da lista tabu quando não encontra vizinho válido
         }
         duracaoTabu = inteiroAleatorio((int)(0.8 * tamanhoLista), (int)(1.2 * tamanhoLista));

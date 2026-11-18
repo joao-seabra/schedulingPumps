@@ -24,11 +24,12 @@ void imprimeSolucao(const Instancia &inst, Solucao &s);
 int main(int argc, char const *argv[]){
   semente(1000);
 
-  const double tempoMAX = 30; //tempo máximo para cada metaheurística em segundos
+  const double tempoMAX = 5; //tempo máximo para cada metaheurística em segundos
 
   const double penalidade1 = -1;
   const double penalidade2 = -1;
   const double penalidade3 = -1;
+  const double alpha = 0.8;
 
   const int quant_min = 10;
   
@@ -41,7 +42,7 @@ int main(int argc, char const *argv[]){
   } 
 
   Instancia inst = leInstancia(nomeArquivoTWLS, nomeArquivoConsumo);
-  Solucao s(inst, quant_min, penalidade1, penalidade2, penalidade3);
+  Solucao s(inst, quant_min, penalidade1, penalidade2, penalidade3, alpha);
 
   std::cout << "\nInstância:\n" << inst << std::endl;
   std::cout << "\nSolução:\n";
@@ -216,6 +217,8 @@ void imprimeSolucao(const Instancia &inst, Solucao &s){
   std::cout << std::fixed << std::setprecision(2);
   std::cout << s << std::endl;
   std::cout << "\nCusto de energia elétrica de s:" << s.getCustoEnergia() << std::endl;
+  std::cout << "\nPeso do Custo de energia elétrica de s:" << s.getAlpha() << std::endl;
+  std::cout << "\nPeso do Custo de manutenção de s:" << s.getBeta() << std::endl;
   std::cout << "\nExcedente de s:" << excedente << std::endl;
   std::cout << "\nPenalidade por excedente de s:" << s.getPenalidade1() << std::endl;
   std::cout << "\nFalta de s:" << falta << std::endl;

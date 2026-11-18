@@ -110,13 +110,18 @@ double Solucao::calculaLambda(int nInterrupcoes){
   return (double) 1 - 0.00036 * (nInterrupcoes * nInterrupcoes) - 0.0122 * nInterrupcoes;
 }
 
+double Solucao::compoeFA(double energia, int nInterrupcoes, double excedente, double falta, double variacao){
+  // Fa(s) montada
+  // Fa divite no final para manter a escala
+  return (alpha * energia / Fa) + (beta  * nInterrupcoes / Fb ) + (penalidade1 * excedente + penalidade2 * falta + penalidade3 * variacao) / Fa;
+}
+
 double Solucao::funcaoAvaliacao(){
   custoEnergia = calculaEnergia(nInterrupcoes);
   double excedente, falta, variacaoNivel;
   calculaNivel(excedente, falta, variacaoNivel);
 
-  fAvaliacao = (custoEnergia / calculaLambda(nInterrupcoes)) + 
-  penalidade1 * excedente + penalidade2 * falta + penalidade3 * variacaoNivel;
+  fAvaliacao = compoeFA(custoEnergia, nInterrupcoes, excedente, falta, variacaoNivel);
 
   return fAvaliacao;
 }
@@ -219,8 +224,7 @@ double Solucao::calculaDeltaMovimento(int i, int multiplicador, int &novo_numInt
   double deltaExcedente = 0, deltaFalta = 0, deltaNivel = 0;
   calculaNivel(temp, deltaExcedente, deltaFalta, deltaNivel);
 
-  double novaFA = novo_custoEnergia / calculaLambda(novo_numInterrupcoes) 
-      + deltaExcedente * penalidade1 + deltaFalta * penalidade2 + deltaNivel * penalidade3;
+  double novaFA = compoeFA(novo_custoEnergia, novo_numInterrupcoes, deltaExcedente, deltaFalta, deltaNivel);
 
   return novaFA - fAvaliacao;
 
@@ -252,11 +256,25 @@ double Solucao::calculaPenalidadeDura(){
   double custoTotal = 0;
   for(const Bomba &b:inst.bombas){
     // custo de todas as bombas ficarem ligadas por 24 horas em horário de pico
-    custoTotal += calculaCustoEnergiaInstantaneo(b, inst.tarifaPico) * 60 * 24;
+    custoTotal += calculaCustoEnergiaInstantaneo(b, inst.tarifaPico) * 60 * inst.nHoras;
   }
   return custoTotal;
 }
 
+double Solucao::calculaFa(){
+  double custoTotal = 0;
+  for(int i = 0; i < inst.nHoras; i++){
+    for(const Bomba &b:inst.bombas){
+      // custo de todas as bombas ficarem ligadas por 24 horas
+      custoTotal += calculaCustoEnergiaInstantaneo(b, inst.tarifaPorHora.at(i)) * 60;
+    }
+  }
+  return custoTotal;
+}
+
+double Solucao::calculaFb(){
+  return 2 * (inst.nHoras - 2) * inst.nBombas; // Máximo estimado de liga/desliga
+}
 
 double Solucao::calculaPenalidade3(){
   double media = 0;
@@ -280,6 +298,10 @@ Solucao& Solucao::operator=(const Solucao& s2) {
     this->penalidade1 = s2.penalidade1;
     this->penalidade2 = s2.penalidade2;
     this->penalidade3 = s2.penalidade3;
+    this->alpha = s2.alpha;
+    this->beta = s2.beta;
+    this->Fa = s2.Fa;
+    this->Fb = s2.Fb;
 
     return *this;
 }
